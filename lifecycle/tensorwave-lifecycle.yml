@@ -1,0 +1,58 @@
+generated: '2026-08-02'
+method: searched
+source: https://github.com/tensorwavecloud/ScalarLM
+versioning:
+  scheme: uri-path
+  current: v1
+  evidence: 'All ScalarLM application routes are mounted under /v1 (openai, generate, megatron and
+    health routers) in infra/cray_infra/api/fastapi/main.py. The Slurm router is mounted at the
+    app root and is therefore unversioned.'
+  unversioned_paths:
+  - /slurm/status
+  - /slurm/squeue
+  - /slurm/cancel/{job_id}
+  - /slurm/endpoints
+  package_versioning:
+    scheme: semver-ish
+    current: '1.151'
+    source: https://pypi.org/project/scalarlm/
+deprecation:
+  policy_url: null
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  evidence: 'No deprecation or sunset policy is published, and no RFC 8594 Sunset/Deprecation
+    header handling appears in the ScalarLM source. No operation in
+    openapi/tensorwave-scalarlm-openapi.yml is marked deprecated.'
+deprecated_operations: []
+sla:
+  url: null
+  uptime_target: null
+  note: 'No public SLA or uptime commitment is published. TensorWave is a sales-led enterprise
+    cloud; terms are at https://tensorwave.com/terms and commercial terms are negotiated per
+    contract.'
+status_page: null
+status_page_evidence: 'No status page found. status.tensorwave.com, tensorwavestatus.com and
+  status pages on the docs host do not resolve, and no status link appears in site navigation or
+  footer. Operational visibility is delivered in-product instead: per-cluster and per-node
+  observability with Slack and email alerting (docs.tensorwave.com/observability/clusters,
+  /observability/notifications-and-alerts).'
+support:
+  channels:
+  - kind: ticket
+    url: https://docs.tensorwave.com/support/filing-support-tickets
+  - kind: email
+  - kind: chat
+  - kind: phone
+  evidence: 'docs.tensorwave.com/welcome-to-tensorwave/faq: "We offer full customer support via
+    email, chat, and phone."'
+maintenance:
+  ScalarLM:
+    license: CC0-1.0
+    maintainers:
+    - TensorWave
+    - RelationalAI
+    repository: https://github.com/tensorwavecloud/ScalarLM
+    latest_release: v1.0 (2026-03-31)
+notes: 'This artifact deliberately does NOT wire a StatusPage or Deprecation pointer in apis.yml:
+  neither exists. Recording their absence is the honest result.'

@@ -1,0 +1,70 @@
+<!-- generated: '2026-08-02' | method: searched | source: https://docs.tensorwave.com/llms.txt | http_status: 200 | content_type: text/markdown | fetched: 2026-08-02 -->
+# TensorWave
+
+## TensorWave Docs
+
+- [Introduction to ROCm](https://docs.tensorwave.com/welcome-to-tensorwave/introduction-to-rocm.md)
+- [FAQ](https://docs.tensorwave.com/welcome-to-tensorwave/faq.md)
+- [Out of the Box](https://docs.tensorwave.com/welcome-to-tensorwave/out-of-the-box.md): After purchase, you will receive instructions for a preconfigured environment that will allow you to easily transition into computing with the MI300X.
+- [Bare Metal Quickstart](https://docs.tensorwave.com/welcome-to-tensorwave/bare-metal-quickstart.md)
+- [PyTorch Quickstart](https://docs.tensorwave.com/welcome-to-tensorwave/pytorch-quickstart.md): Estimated time: 2 minutes, 3 minutes with buffer
+- [Docker Quickstart](https://docs.tensorwave.com/welcome-to-tensorwave/docker-quickstart.md): Estimated time: 5 minutes, 6 minutes with buffer.
+- [Kubernetes Quickstart](https://docs.tensorwave.com/welcome-to-tensorwave/kubernetes-quickstart.md): Estimated time: 6 minutes, 8 minutes with buffer.
+- [Hugging Face Quickstart](https://docs.tensorwave.com/welcome-to-tensorwave/hugging-face-quickstart.md): Estimated time: 7 minutes, 9 minutes with buffer.
+- [Clusters](https://docs.tensorwave.com/observability/clusters.md)
+- [Nodes](https://docs.tensorwave.com/observability/nodes.md)
+- [Slurm](https://docs.tensorwave.com/observability/slurm.md)
+- [Kubernetes](https://docs.tensorwave.com/observability/kubernetes.md)
+- [Notifications & Alerts](https://docs.tensorwave.com/observability/notifications-and-alerts.md)
+- [Slurm Overview](https://docs.tensorwave.com/slurm/slurm-overview.md)
+- [Access](https://docs.tensorwave.com/slurm/access.md)
+- [Storage](https://docs.tensorwave.com/slurm/storage.md)
+- [Jobs](https://docs.tensorwave.com/slurm/jobs.md)
+- [Containers](https://docs.tensorwave.com/slurm/containers.md)
+- [Network Drivers](https://docs.tensorwave.com/slurm/containers/network-drivers.md)
+- [Modules](https://docs.tensorwave.com/slurm/modules.md)
+- [Prolog / Epilog](https://docs.tensorwave.com/slurm/prolog-epilog.md)
+- [Job Submission Lua Plugin](https://docs.tensorwave.com/slurm/job-submission-lua-plugin.md)
+- [Healthchecks](https://docs.tensorwave.com/slurm/healthchecks.md)
+- [Performance](https://docs.tensorwave.com/slurm/performance.md)
+- [Common Issues](https://docs.tensorwave.com/slurm/common-issues.md)
+- [Health Overview](https://docs.tensorwave.com/kubernetes/health-overview.md)
+- [Nodes](https://docs.tensorwave.com/kubernetes/nodes.md)
+- [Workloads](https://docs.tensorwave.com/kubernetes/workloads.md)
+- [Filing Support Tickets](https://docs.tensorwave.com/support/filing-support-tickets.md)
+- [Syncing Public Keys](https://docs.tensorwave.com/user-and-team-management/syncing-public-keys.md)
+- [Managing team member access](https://docs.tensorwave.com/user-and-team-management/managing-team-member-access.md)
+- [Self-serve inviting users](https://docs.tensorwave.com/user-and-team-management/self-serve-inviting-users.md)
+- [Slurm- Old](https://docs.tensorwave.com/slurm-old.md): Slurm provides a multi-tenant framework for managing compute resources and jobs that span large clusters.
+- [Running Containerized Jobs](https://docs.tensorwave.com/slurm-old/running-containerized-jobs.md)
+- [Running Containerized Jobs in Pyxis](https://docs.tensorwave.com/slurm-old/running-containerized-jobs/running-containerized-jobs-in-pyxis.md): TensorWave Slurm integrates Pyxis, a container runtime plugin for Slurm that enables users to run containerized workloads directly within their jobs.
+- [Running Containerized Jobs with Apptainer](https://docs.tensorwave.com/slurm-old/running-containerized-jobs/running-containerized-jobs-with-apptainer.md)
+- [Managing Container Images with Enroot](https://docs.tensorwave.com/slurm-old/managing-container-images-with-enroot.md): TensorWave Slurm uses Enroot as its lightweight, high-performance container runtime for HPC and AI workloads.
+- [Running Jobs With Modules](https://docs.tensorwave.com/slurm-old/running-jobs-with-modules.md)
+- [Debugging Workloads and Interactive Jobs](https://docs.tensorwave.com/slurm-old/debugging-workloads-and-interactive-jobs.md)
+- [Custom Prolog and Epilog scripts](https://docs.tensorwave.com/slurm-old/custom-prolog-and-epilog-scripts.md)
+- [Healthchecks and SDebug](https://docs.tensorwave.com/slurm-old/healthchecks-and-sdebug.md): Overview of TensorWave's health checks and SDebug hardware debugging tool. This tool is designed to make cluster admins life easier w.r.t managing (un)healthy nodes.
+- [Easy Porting: NVIDIA to AMD Guide](https://docs.tensorwave.com/guides/easy-porting-nvidia-to-amd-guide.md)
+- [Policies](https://docs.tensorwave.com/policies.md)
+- [Terms of Service](https://docs.tensorwave.com/policies/terms-of-service.md): REVISED JAN 2024
+- [Privacy Policy](https://docs.tensorwave.com/policies/privacy-policy.md): REVISED JAN 2024
+- [AMD vs NVIDIA](https://docs.tensorwave.com/connect-with-us/amd-vs-nvidia.md)
+- [MI300X vs H100](https://docs.tensorwave.com/connect-with-us/amd-vs-nvidia/mi300x-vs-h100.md)
+- [Architecture](https://docs.tensorwave.com/connect-with-us/amd-vs-nvidia/architecture.md)
+- [Why TensorWave?](https://docs.tensorwave.com/connect-with-us/why-tensorwave.md)
+
+
+---
+
+# Agent Instructions
+This documentation is published with GitBook. GitBook is the documentation platform designed so that both humans and AI agents can read, navigate, and reason over technical content effectively. Learn more at gitbook.com.
+
+## Querying This Documentation
+If you need additional information, you can query the documentation dynamically by asking a question.
+Perform an HTTP GET request on a page URL with the `ask` query parameter:
+```
+GET https://docs.tensorwave.com/welcome-to-tensorwave/introduction-to-rocm.md?ask=<question>
+```
+The question should be specific, self-contained, and written in natural language.
+The response will contain a direct answer to the question and relevant excerpts and sources from the documentation.
+Use this mechanism when the answer is not explicitly present in the current page, you need clarification or additional context, or you want to retrieve related documentation sections.

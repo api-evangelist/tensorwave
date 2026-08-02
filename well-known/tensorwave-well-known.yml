@@ -1,0 +1,132 @@
+generated: '2026-08-02'
+method: probed
+source: live HTTP probes of every TensorWave / ScalarLM host
+summary:
+  documents_found: 0
+  note: 'TensorWave publishes no /.well-known/ discovery documents on any host. The one
+    agent-readable discovery surface it does publish is a real llms.txt on the docs host, saved
+    verbatim to llms/tensorwave-llms.txt.'
+warning: 'tensorwave.com answers HTTP 200 with the marketing site''s SPA catch-all HTML for EVERY
+  unmatched path, including every /.well-known/* path, /openapi.json, /swagger.json and
+  /llms.txt. Status code alone is not evidence here. Each 200 below was rejected because the
+  content_type was text/html and the body length matched the 404 baseline (10,623 bytes measured
+  against https://tensorwave.com/zzz-not-a-real-page).'
+hosts:
+- host: https://tensorwave.com
+  role: website
+  catch_all: true
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /.well-known/api-catalog
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /.well-known/agent.json
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /openapi.json
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /openapi.yaml
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /swagger.json
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /v1/openapi.json
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /redoc
+    status: 200
+    content_type: text/html
+    result: false-positive-spa-catch-all
+  - path: /api-docs
+    status: 404
+- host: https://docs.tensorwave.com
+  role: documentation (GitBook)
+  catch_all: false
+  documents:
+  - path: /llms.txt
+    status: 200
+    content_type: text/markdown
+    result: found
+    file: ../llms/tensorwave-llms.txt
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /openapi.json
+    status: 404
+  - path: /swagger.json
+    status: 404
+- host: https://www.scalarlm.com
+  role: ScalarLM documentation (Ghost)
+  catch_all: false
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /openapi.json
+    status: 404
+- host: https://security.tensorwave.com
+  role: trust center (SafeBase)
+  note: Returns 403 to non-browser user agents; probed paths are not meaningful.
+- host: https://gpt-oss.cray-lm.com
+  role: documented ScalarLM demo deployment
+  documents:
+  - path: /openapi.json
+    status: 530
+    result: origin-unreachable
+    note: 'Cloudflare 530 (origin down). A running ScalarLM deployment serves FastAPI''s own
+      generated OpenAPI here; it could not be retrieved at probe time, which is why
+      openapi/tensorwave-scalarlm-openapi.yml is derived from source instead.'
+  - path: /docs
+    status: 530
+  - path: /v1/health
+    status: 530
+non_resolving_hosts:
+- api.tensorwave.com
+- inference.tensorwave.com
+- console.tensorwave.com
+- dashboard.tensorwave.com
+- app.tensorwave.com
+- status.tensorwave.com
+- mcp.tensorwave.com
+- llama8btensorwave.cray-lm.com

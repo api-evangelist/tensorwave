@@ -1,0 +1,132 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the ScalarLM API
+  version: 1.0.0
+extends: openapi/tensorwave-scalarlm-openapi.yml
+x-provenance:
+  generated: '2026-08-02'
+  method: generated
+  source: >-
+    API Evangelist enrichment pass over openapi/tensorwave-scalarlm-openapi.yml, which is itself
+    derived from the first-party FastAPI source at github.com/tensorwavecloud/ScalarLM.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: tensorwave
+    x-apievangelist-api: tensorwave:scalarlm
+    x-apievangelist-reviewed: '2026-08-02'
+    x-apievangelist-artifacts:
+      authentication: authentication/tensorwave-authentication.yml
+      conventions: conventions/tensorwave-conventions.yml
+      errors: errors/tensorwave-problem-types.yml
+      data_model: data-model/tensorwave-data-model.yml
+      lifecycle: lifecycle/tensorwave-lifecycle.yml
+      conformance: conformance/tensorwave-conformance.yml
+      skills: skills/_index.yml
+- target: $.info
+  update:
+    x-apievangelist-caveats:
+    - >-
+      No application-level authentication is declared or documented. Every operation, including
+      clearQueue, deleteTrainingJob, cancelSlurmJob and publishToHuggingFace, is reachable by any
+      caller who can reach the deployment. Perimeter protection is the operator's responsibility.
+    - >-
+      No idempotency contract. Retrying a POST to /v1/generate or /v1/megatron/train enqueues new
+      work.
+    - >-
+      Failures ride inline on 200 responses (Result.error, UploadResult.error,
+      SqueueResponse.error_message, and SSE data:{"error":...} events). Status-code-only error
+      handling will silently miss per-item failures.
+    - >-
+      CORS is configured for http://localhost:5173 only, so browser calls from other origins are
+      blocked by default.
+- target: $.paths['/v1/generate'].post
+  update:
+    x-agentic-access:
+      action_class: acting
+      consequence: write
+      audit: required
+    x-apievangelist-note: >-
+      Asynchronous. Returns request_ids; poll getResults. Accepts a batch of independent prompts
+      in one call.
+- target: $.paths['/v1/chat/completions'].post
+  update:
+    x-agentic-access:
+      action_class: acting
+      consequence: write
+      audit: recommended
+    x-apievangelist-note: >-
+      Two transports behind one operation. stream=true proxies straight to vLLM as SSE;
+      stream=false goes through admission control and the SQLite work queue and answers with a
+      whitespace-heartbeat chunked JSON body.
+- target: $.paths['/v1/megatron/train'].post
+  update:
+    x-agentic-access:
+      action_class: acting
+      consequence: physical
+      consequence_note: Allocates GPU cluster time; materially billable.
+      audit: required
+      purpose_required: true
+- target: $.paths['/v1/megatron/train/{job_hash}/publish'].post
+  update:
+    x-agentic-access:
+      action_class: acting
+      consequence: physical
+      consequence_note: Publishes model weights to a third-party public registry.
+      audit: required
+      human_in_the_loop: recommended
+    x-apievangelist-note: >-
+      Carries a caller-supplied Hugging Face write token in the request body. Treat the body as a
+      secret-bearing payload; do not log it.
+- target: $.paths['/v1/megatron/delete/{job_hash}'].post
+  update:
+    x-agentic-access:
+      action_class: acting
+      consequence: safety-critical
+      consequence_note: Irreversible deletion of a training job and its artifacts.
+      audit: required
+      human_in_the_loop: required
+- target: $.paths['/v1/generate/clear_queue'].post
+  update:
+    x-agentic-access:
+      action_class: acting
+      consequence: safety-critical
+      consequence_note: Discards all queued inference work for every tenant of the deployment.
+      audit: required
+      human_in_the_loop: required
+- target: $.paths['/v1/megatron/cancel/{job_hash}'].post
+  update:
+    x-agentic-access:
+      action_class: acting
+      consequence: safety-critical
+      audit: required
+      human_in_the_loop: required
+- target: $.paths['/slurm/cancel/{job_id}'].post
+  update:
+    x-agentic-access:
+      action_class: acting
+      consequence: safety-critical
+      audit: required
+      human_in_the_loop: required
+- target: $.paths['/v1/generate/get_work'].post
+  update:
+    x-apievangelist-audience: worker
+    x-apievangelist-note: >-
+      Worker-plane operation, not a client operation. Claims queued work; pair with finishWork.
+- target: $.paths['/v1/generate/finish_work'].post
+  update:
+    x-apievangelist-audience: worker
+- target: $.paths['/v1/generate/list_requests'].get
+  update:
+    x-apievangelist-pagination:
+      style: cursor
+      cursor_param: cursor
+      limit_param: limit
+      default_limit: 50
+- target: $.paths['/v1/megatron/train/{job_hash}/dataset'].get
+  update:
+    x-apievangelist-pagination:
+      style: offset-limit
+      offset_param: offset
+      limit_param: limit
+      default_limit: 50

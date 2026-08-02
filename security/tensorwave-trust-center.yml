@@ -1,0 +1,76 @@
+generated: '2026-08-02'
+method: searched
+probe: true
+source: https://security.tensorwave.com/
+url: https://security.tensorwave.com/
+platform: SafeBase
+founded: '2023'
+contact: security@tensorwave.com
+response_target: 4 business hours
+certifications:
+- SOC 2
+- ISO 27001
+- HIPAA
+compliances:
+- name: SOC 2
+  status: Compliant
+  detail: SOC 2 Type 2 report for 2025, announced on the trust center 2026-01-14.
+- name: ISO 27001
+  status: Compliant
+  version: v2022
+  detail: 2025 ISO 27001 v2022 audit report listed under Resources.
+- name: HIPAA
+  status: Compliant
+control_families:
+- Product security
+- Situational Awareness For Incidents
+- Network security
+- Transmission Confidentiality
+- App security
+- Conspicuous Link To Privacy Notice
+documents:
+- title: TensorWave Vulnerability Disclosure Policy
+  kind: Policy
+  access: request
+- title: TensorWave 2025 ISO 27001v2022 Audit Report
+  kind: Document
+  access: request
+- title: TensorWave Inc. SOC2 Type 2 Report 2025
+  kind: Document
+  access: request
+- title: TensorWave External Pentest Executive Summary 2026
+  kind: Document
+  access: request
+- title: TensorWave External WebApp Pentest Executive Summary 2026
+  kind: Document
+  access: request
+- title: TensorWave Internal Pentest Executive Summary 2026
+  kind: Document
+  access: request
+updates:
+- date: '2026-05-07'
+  title: The Vulnerability Disclosure Policy is now available!
+- date: '2026-01-14'
+  title: New SOC 2 Type 2 report is here!
+- date: '2026-01-09'
+  title: New pentest reports available!
+trusted_by:
+- AMD
+- SuperMicro
+- Meta
+notes: 'Document downloads are gated behind a "Request access" flow; the certification and control
+  claims, the updates feed and the security contact are publicly visible without authentication.
+  The host returns HTTP 403 to non-browser user agents, so a plain probe misses it.'
+evidence:
+- source: https://security.tensorwave.com/
+  fetched: '2026-08-02'
+  http_status: 200
+  content_type: text/html
+  note: Fetched with a browser user agent; a default agent receives 403.
+  keywords:
+  - soc 2
+  - soc2 type 2
+  - iso 27001
+  - hipaa
+  - trust center
+  - vulnerability disclosure policy

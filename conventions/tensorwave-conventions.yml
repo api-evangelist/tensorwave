@@ -1,0 +1,154 @@
+generated: '2026-08-02'
+method: derived
+source: openapi/tensorwave-scalarlm-openapi.yml
+docs: https://www.scalarlm.com/docs/
+api: ScalarLM API
+authentication:
+  style: none
+  detail: See authentication/tensorwave-authentication.yml. No securityScheme is declared.
+idempotency:
+  supported: false
+  header: null
+  detail: 'No idempotency key header or parameter exists anywhere in the ScalarLM route surface,
+    and none is documented. Retrying a POST to /v1/generate or /v1/megatron/train enqueues new
+    work. The one thing approaching a dedup handle is the internal SSE request hash
+    (compute_request_hash in openai_v1_router.py), which is used to name on-disk request
+    artifacts, not to deduplicate submissions.'
+  note: 'Deliberately no `Idempotency` pointer in apis.yml: the provider has no idempotency
+    contract.'
+pagination:
+  styles:
+  - style: cursor
+    operations:
+    - listRequests
+    params:
+      cursor: Opaque float timestamp cursor; omit for the first page.
+      limit: Page size, default 50.
+    response_fields: Not declared by a response model in source.
+  - style: offset-limit
+    operations:
+    - getTrainingDataset
+    params:
+      offset: Zero-based row offset, default 0.
+      limit: Page size, default 50.
+      q: Free-text filter over dataset rows.
+  - style: log-tail
+    operations:
+    - getPublishLogs
+    - getServiceLogs
+    - getTrainingLogs
+    params:
+      starting_line_number: Resume from this line.
+      starting_byte_offset: Resume from this byte offset.
+      tail: Return only the last N lines.
+      limit: Maximum lines to return.
+    note: A resumable cursor pair over a growing log file rather than classic pagination.
+  consistency: 'Three different paging idioms coexist across the surface; there is no single
+    provider-wide pagination envelope.'
+batching:
+  supported: true
+  detail: '/v1/generate takes a `prompts` array of independent requests in one call and returns a
+    `results` array keyed by request_id; the client SDK fans a dataset out across GPUs on top of
+    this. Workers pull batches with getWork (batch_size) and acknowledge them in bulk with
+    finishWork (a `requests` array).'
+asynchrony:
+  model: submit-then-poll
+  detail: 'Both long-running domains are async. Inference: generate returns request_ids, then
+    getResults polls them. Training: submitTrainingJob / finalizeChunkedUpload return a job_hash
+    and job_status, then getTrainingJob and getTrainingLogs poll. Publishing: publishToHuggingFace
+    returns a publish job id, then getPublishStatus polls.'
+  callbacks: none
+streaming:
+  transports:
+  - transport: sse
+    media_type: text/event-stream
+    operations:
+    - createChatCompletion
+    - createCompletion
+    - getTrainingLogs
+    trigger: '`stream: true` on the chat/completion body; log endpoints always stream.'
+  - transport: chunked-json-heartbeat
+    operations:
+    - createChatCompletion
+    trigger: '`stream: false`. The queue-backed path emits whitespace heartbeats to hold the
+      connection open while the request waits in the SQLite work queue, then writes the JSON body.'
+uploads:
+  styles:
+  - style: chunked
+    operations:
+    - initChunkedUpload
+    - uploadChunk
+    - finalizeChunkedUpload
+    detail: 'Three-phase resumable upload for training datasets. Init declares total_size,
+      total_hash, chunk_size, num_chunks and whether the payload is compressed, and returns an
+      upload_id plus the already-received chunk indexes (so a resumed upload can skip them).
+      Each chunk carries X-Upload-Id, X-Chunk-Index and X-Chunk-Hash headers with the bytes in the
+      body. Finalize launches the training job.'
+    integrity: Per-chunk hash plus a whole-payload hash.
+metadata:
+  supported: false
+request_tracing:
+  header: traceparent
+  standard: W3C Trace Context
+  detail: 'The HTTP logging middleware parses an inbound `traceparent` header and emits the trace
+    id on structured JSON request_start/request_end log lines. OpenTelemetry tracing is
+    initialized at app startup (service name scalarlm-api). No request-id is returned to the
+    caller in a response header.'
+  response_header: null
+error_envelope:
+  styles:
+  - style: fastapi-validation
+    status: 422
+    shape: '{"detail": [{"loc": [...], "msg": "...", "type": "..."}]}'
+    detail: Automatic for any request that fails Pydantic validation.
+  - style: inline-error-field
+    status: 200
+    shape: '{"error": "..."}'
+    detail: 'The dominant pattern. Per-item failures ride in an `error` field on the result object
+      (Result.error, UploadResult.error, FinishWorkRequest.error, SqueueResponse.error_message)
+      with a 200 status, so a batch can partially succeed. Upstream vLLM failures on the streaming
+      path are emitted as an SSE `data: {"error": "..."}` event, also under a 200.'
+  - style: passthrough-status
+    detail: 'listModels returns the upstream vLLM status code with {"error": "Failed to fetch
+      models: <status>"} when the proxy call fails.'
+  rfc9457: false
+  problem_json: false
+  see: errors/tensorwave-problem-types.yml
+rate_limiting:
+  headers: none
+  detail: 'No rate-limit headers are emitted. Backpressure is expressed structurally instead:
+    admission control in front of the chat-completions queue, a coalescer, and a SQLite-backed
+    inference work queue whose depth is readable at getGenerateMetrics (queue_depth).'
+  see: null
+versioning:
+  style: uri-path
+  current: v1
+  see: lifecycle/tensorwave-lifecycle.yml
+content_types:
+  request: application/json
+  response:
+  - application/json
+  - text/event-stream
+  - text/plain
+  - application/x-ndjson
+cors:
+  enabled: true
+  detail: 'CORSMiddleware is configured with allow_origins=["http://localhost:5173"] only, i.e. the
+    local dev UI. Browser calls from any other origin are blocked by default.'
+observability:
+  metrics:
+  - operation: getGenerateMetrics
+    format: json
+    fields: [queue_depth, total_completed_requests, total_completed_tokens,
+      total_completed_response_time, tokens_per_second, requests_per_second, flops_per_second]
+  - operation: getPrometheusMetrics
+    format: prometheus-text
+  tracing: OpenTelemetry
+  introspection: 'Every router exposes a /endpoints route that lists its own registered paths and
+    methods (listGenerateEndpoints, listMegatronEndpoints, listHealthEndpoints,
+    listSlurmEndpoints) - a lightweight runtime route catalog.'
+cross_links:
+  authentication: authentication/tensorwave-authentication.yml
+  errors: errors/tensorwave-problem-types.yml
+  lifecycle: lifecycle/tensorwave-lifecycle.yml
+  data_model: data-model/tensorwave-data-model.yml

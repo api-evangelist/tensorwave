@@ -1,0 +1,161 @@
+generated: '2026-08-02'
+method: derived
+source: openapi/tensorwave-scalarlm-openapi.yml
+summary: 'ScalarLM has two loosely-coupled entity clusters joined by the checkpoint. On the
+  inference side an InferenceRequest is enqueued, claimed by a Worker as a WorkItem and closed
+  with a Result. On the training side a Dataset is uploaded (optionally through a chunked Upload),
+  becomes a TrainingJob dispatched as a SlurmJob, which writes Checkpoints, one of which can be
+  pushed to Hugging Face through a PublishJob. The Model that inference serves is loaded from a
+  checkpoint the training side produced - that shared checkpoint is the whole point of the stack
+  and the only real join between the two clusters.'
+identifiers:
+- entity: InferenceRequest
+  field: request_id
+  type: string
+- entity: TrainingJob
+  field: job_hash
+  type: string
+  note: Content-addressed hash, used as the path segment for every training sub-resource.
+- entity: Upload
+  field: upload_id
+  type: string
+- entity: SlurmJob
+  field: job_id
+  type: string
+- entity: Model
+  field: model_name
+  type: string
+- entity: Adaptor
+  field: name
+  type: string
+entities:
+- name: InferenceRequest
+  schemas: [GenerateRequest, Result]
+  operations: [generate, getResults, listRequests, getRequestDetail, downloadGenerateData,
+    uploadGenerateData]
+  fields: [request_id, model, prompts, max_tokens, temperature, tools, tool_choice]
+  lifecycle: enqueued -> claimed (getWork) -> finished (finishWork) -> readable (getResults)
+- name: Result
+  schemas: [Result, GenerateResponse]
+  fields: [request_id, response, error]
+  note: response is either a completion string or an embedding vector (list of floats).
+- name: WorkItem
+  schemas: [GetWorkResponse, GetWorkResponses]
+  operations: [getWork, finishWork]
+  fields: [request_id, prompt, request_type, model, max_tokens]
+  note: The worker-facing projection of an InferenceRequest.
+- name: Worker
+  schemas: [GetWorkRequest, FinishWorkRequest]
+  operations: [getWork, finishWork, getAdaptors]
+  fields: [batch_size, loaded_adaptor_count, token_count, prompt_tokens, completion_tokens,
+    flop_count]
+  note: Not a stored resource; identified only by what it declares on each poll.
+- name: Adaptor
+  schemas: [GetAdaptorsRequest, GetAdaptorsResponse]
+  operations: [getAdaptors, getWork]
+  note: LoRA adaptors distributed to workers; delivered as a delta against loaded_adaptor_count.
+- name: Model
+  schemas: [ListModelsResponse]
+  operations: [listModels, listDeployedModels]
+- name: TrainingJob
+  schemas: [TrainResponse]
+  operations: [submitTrainingJob, finalizeChunkedUpload, getTrainingJob, cancelTrainingJob,
+    restartTrainingJob, deleteTrainingJob, getTrainingLogs]
+  fields: [job_hash, job_status, job_config, deployed]
+- name: Dataset
+  operations: [getTrainingDataset, downloadTrainingDataset]
+  format: dataset.jsonlines
+  note: Owned by a TrainingJob; addressed only under /train/{job_hash}/dataset.
+- name: Upload
+  schemas: [UploadInitRequest, UploadInitResponse, UploadChunkResponse, UploadFinalizeRequest]
+  operations: [initChunkedUpload, uploadChunk, finalizeChunkedUpload]
+  fields: [upload_id, total_size, total_hash, chunk_size, num_chunks, compressed, params,
+    received_chunks]
+- name: Checkpoint
+  operations: [listCheckpoints, publishToHuggingFace]
+  naming: checkpoint_<step>.pt
+- name: PublishJob
+  schemas: [PublishRequest]
+  operations: [publishToHuggingFace, getPublishStatus, cancelPublish, getPublishLogs]
+  fields: [mode, repo_id, private, hf_token, checkpoint, lora_alpha, commit_message]
+- name: SlurmJob
+  schemas: [SqueueResponse]
+  operations: [getSlurmStatus, getSlurmSqueue, cancelSlurmJob, getMegatronSqueue]
+  fields: [job_id, squeue_output]
+- name: Cluster
+  schemas: [GetGPUCountResponse, GetNodeCountResponse, MetricsResponse]
+  operations: [getGpuCount, getNodeCount, getGenerateMetrics, getPrometheusMetrics,
+    getSlurmStatus, checkHealth]
+relationships:
+- from: InferenceRequest
+  to: Result
+  kind: has_one
+  via: request_id
+- from: InferenceRequest
+  to: WorkItem
+  kind: has_one
+  via: request_id
+  note: Projection, not a separate stored row.
+- from: InferenceRequest
+  to: Model
+  kind: belongs_to
+  via: model
+- from: GetWorkResponses
+  to: WorkItem
+  kind: has_many
+  via: requests
+- from: GetWorkResponses
+  to: Adaptor
+  kind: has_many
+  via: new_adaptors
+- from: GenerateResponse
+  to: Result
+  kind: has_many
+  via: results
+- from: FinishWorkRequests
+  to: FinishWorkRequest
+  kind: has_many
+  via: requests
+- from: TrainingJob
+  to: Dataset
+  kind: has_one
+  via: job_hash (path)
+- from: TrainingJob
+  to: Checkpoint
+  kind: has_many
+  via: job_hash (path)
+- from: TrainingJob
+  to: PublishJob
+  kind: has_many
+  via: job_hash (path)
+- from: TrainingJob
+  to: SlurmJob
+  kind: has_one
+  via: job_status
+- from: PublishJob
+  to: Checkpoint
+  kind: belongs_to
+  via: checkpoint
+- from: PublishJob
+  to: SlurmJob
+  kind: has_one
+  via: submitted publish job id
+- from: Upload
+  to: TrainingJob
+  kind: has_one
+  via: finalizeChunkedUpload
+- from: Checkpoint
+  to: Model
+  kind: has_one
+  via: checkpoint load
+  note: 'The seam of the whole stack: Megatron writes a checkpoint, vLLM loads it, and the
+    inference pod does not restart for the update to take effect.'
+- from: Model
+  to: Adaptor
+  kind: has_many
+  via: adaptor distribution
+derivation_notes: 'Derived from schema $ref links and path-hierarchy ownership in
+  openapi/tensorwave-scalarlm-openapi.yml, which is itself derived from the ScalarLM source.
+  Several training operations return untyped dicts in source (job_status, job_config, checkpoint
+  listings), so those entities are reconstructed from path structure and operation semantics
+  rather than from declared schemas; they are named here without invented field lists.'

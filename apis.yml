@@ -1,23 +1,129 @@
 aid: tensorwave
 name: TensorWave
-description: 'TensorWave is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: 'TensorWave is a Las Vegas-headquartered AI cloud provider that builds and operates
+  bare-metal GPU infrastructure exclusively on AMD Instinct accelerators (MI300X, MI325X, MI355X
+  and MI455X) with AMD''s open ROCm software stack. The company sells dedicated GPU nodes,
+  high-speed network storage, and managed Slurm and Kubernetes clusters for AI model training,
+  fine-tuning and inference, with observability, job scheduling, alerting and expert support
+  layered on top. Access to the compute platform itself is delivered over SSH, Slurm and
+  Kubernetes rather than a public REST control-plane API. TensorWave''s public API surface is
+  ScalarLM, the CC0-licensed unified training-and-inference stack it maintains and sponsors
+  alongside RelationalAI, which exposes an OpenAI-compatible inference endpoint backed by vLLM
+  together with a Megatron-LM training surface from a single deployment.'
 url: https://raw.githubusercontent.com/api-evangelist/tensorwave/refs/heads/main/apis.yml
+image: https://cdn.builder.io/api/v1/image/assets%2Ff941d509b8ea45f8972dd215996c7055%2Fdb1d4443bf134999962dbc3ab17eb3e6
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-02'
 modified: '2026-08-02'
 tags:
 - Company
-apis: []
+- Artificial Intelligence
+- Machine Learning
+- Cloud Computing
+- GPU
+- Infrastructure
+- Inference
+- Model Training
+- High Performance Computing
+- Data Centers
+apis:
+- aid: tensorwave:scalarlm
+  name: ScalarLM API
+  description: 'ScalarLM is the open-source (CC0-1.0) unified LLM training and inference stack
+    maintained and sponsored by TensorWave. A single deployment exposes an OpenAI-compatible
+    inference endpoint backed by vLLM (/v1/chat/completions, /v1/completions, /v1/models), a
+    queue-backed batch generate surface with worker coordination, a Megatron-LM training surface
+    dispatched through Slurm (chunked dataset upload, job control, checkpoints, publish-to-Hugging
+    Face), plus Slurm scheduler and health/metrics endpoints. It runs unchanged on AMD and NVIDIA
+    GPUs; TensorWave''s own deployments run on AMD MI300X.'
+  humanURL: https://www.scalarlm.com/docs/
+  baseURL: https://gpt-oss.cray-lm.com
+  tags:
+  - Inference
+  - Model Training
+  - Machine Learning
+  - LLM
+  - OpenAI Compatible
+  - Slurm
+  properties:
+  - type: OpenAPI
+    url: openapi/tensorwave-scalarlm-openapi.yml
+  - type: Overlay
+    url: overlays/tensorwave-scalarlm-overlay.yaml
+  - type: Documentation
+    url: https://www.scalarlm.com/docs/
+  - type: APIReference
+    url: https://www.scalarlm.com/inference/
+  - type: GettingStarted
+    url: https://www.scalarlm.com/quick-start/
+  - type: SourceCode
+    url: https://github.com/tensorwavecloud/ScalarLM
+  - type: Authentication
+    url: authentication/tensorwave-authentication.yml
+  - type: Conventions
+    url: conventions/tensorwave-conventions.yml
+  - type: ErrorCatalog
+    url: errors/tensorwave-problem-types.yml
+  - type: DataModel
+    url: data-model/tensorwave-data-model.yml
+  - type: AgentSkill
+    url: skills/_index.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: TrustCenter
+  url: security/tensorwave-trust-center.yml
 - type: Website
-  url: https://forgeglobal.com/tensorwave_stock/
+  url: https://tensorwave.com/
+- type: DeveloperPortal
+  url: https://docs.tensorwave.com/
+- type: Documentation
+  url: https://docs.tensorwave.com/
+- type: GettingStarted
+  url: https://docs.tensorwave.com/welcome-to-tensorwave/bare-metal-quickstart
+- type: Support
+  url: https://docs.tensorwave.com/support/filing-support-tickets
+- type: Blog
+  url: https://tensorwave.com/blog
+- type: GitHubOrganization
+  url: https://github.com/tensorwavecloud
+- type: TermsOfService
+  url: https://tensorwave.com/terms
+- type: PrivacyPolicy
+  url: https://tensorwave.com/privacy
+- type: Compliance
+  url: https://security.tensorwave.com/
+- type: Security
+  url: https://security.tensorwave.com/
+- type: Contact
+  url: https://tensorwave.com/connect
+- type: LLMsTxt
+  url: llms/tensorwave-llms.txt
+- type: Packages
+  url: packages/tensorwave-packages.yml
+- type: SDKs
+  url: packages/tensorwave-packages.yml
+- type: CLI
+  url: cli/tensorwave-cli.yml
+- type: WellKnown
+  url: well-known/tensorwave-well-known.yml
+- type: Conformance
+  url: conformance/tensorwave-conformance.yml
+- type: Lifecycle
+  url: lifecycle/tensorwave-lifecycle.yml
+- type: ChangeLog
+  url: changelog/tensorwave-changelog.yml
+- type: DomainSecurity
+  url: security/tensorwave-domain-security.yml
+- type: VulnerabilityDisclosure
+  url: security/tensorwave-vulnerability-disclosure.yml
+x-enrichment:
+  date: '2026-08-02'
+  status: enriched
+  artifacts_added: 21
+  pass: local-v1

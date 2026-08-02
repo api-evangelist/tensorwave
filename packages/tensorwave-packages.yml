@@ -1,0 +1,54 @@
+generated: '2026-08-02'
+method: searched
+source: https://pypi.org/project/scalarlm/
+packages:
+- language: python
+  registry: pypi
+  name: scalarlm
+  url: https://pypi.org/project/scalarlm/
+  install: pip install scalarlm
+  version: '1.151'
+  released: '2026-06-12'
+  releases: 30
+  official: true
+  repository: https://github.com/tensorwavecloud/ScalarLM
+  license: CC0-1.0
+  description: 'Client SDK and monitoring CLI for the ScalarLM unified inference and training
+    stack. Provides the SupermassiveIntelligence client (generate/train) plus the `scalarlm`
+    CLI (logs, plot, ls, squeue). Published from the TensorWave GitHub organization.'
+  authors:
+  - Greg Diamos
+  - Naila Farooqui
+  dependencies:
+  - aiohttp
+  - aiofiles
+  - jsonlines
+  - matplotlib
+  - humanize
+  provides:
+  - sdk
+  - cli
+registries_checked:
+- registry: pypi
+  queries: [scalarlm, masint, tensorwave, cray-infra]
+  found: [scalarlm]
+- registry: npm
+  queries: [scalarlm, tensorwave, '@tensorwave/sdk']
+  found: []
+- registry: rubygems
+  found: []
+- registry: crates.io
+  found: []
+- registry: nuget
+  found: []
+- registry: maven-central
+  found: []
+- registry: pkg.go.dev
+  found: []
+notes: 'TensorWave ships no client library for its own GPU cloud platform, because that platform
+  is consumed over SSH, Slurm and Kubernetes rather than a REST API. The one first-party package
+  is the ScalarLM SDK/CLI. The TensorWave GitHub organization (tensorwavecloud) additionally
+  carries forks of vLLM, DeepSpeed, axolotl, TRL, LLaMA-Factory, flash-attention, kserve, the AMD
+  k8s-device-plugin and the Slinky slurm-operator, plus two original Go/Rust tools
+  (terraform-provider-proxmox, commandant-rs); none of those are distributed as a TensorWave
+  client SDK and so are not listed as packages here.'

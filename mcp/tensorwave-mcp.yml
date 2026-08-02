@@ -1,0 +1,77 @@
+generated: '2026-08-02'
+method: derived
+status: candidate
+source: openapi/tensorwave-scalarlm-openapi.yml
+published: false
+search_result:
+  found: false
+  searched:
+  - TensorWave and ScalarLM documentation (docs.tensorwave.com, www.scalarlm.com)
+  - github.com/tensorwavecloud (all 19 public repositories; no mcp path in the ScalarLM tree)
+  - npm (@modelcontextprotocol scope, tensorwave, scalarlm)
+  - PyPI (tensorwave, scalarlm)
+  - DNS for mcp.tensorwave.com (NXDOMAIN)
+  conclusion: TensorWave publishes no hosted or packaged MCP server.
+pointer_policy: >-
+  This file is a DESIGN CANDIDATE only. No `type: MCPServer` pointer is wired into apis.yml,
+  because no MCP server exists. Wiring one would credit TensorWave with an agent surface it does
+  not ship. If TensorWave publishes a server, replace this file with the searched artifact and
+  add the pointer then.
+server:
+  name: scalarlm
+  transport: http
+  url: null
+proposed_tools:
+- name: list_models
+  description: List models available on the ScalarLM deployment.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#listModels
+- name: chat_completion
+  description: Run an OpenAI-compatible chat completion against the deployed model.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#createChatCompletion
+- name: generate_batch
+  description: Submit a batch of prompts to the inference queue and receive request ids.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#generate
+- name: get_results
+  description: Fetch results for previously submitted request ids.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#getResults
+- name: list_requests
+  description: Page through recent inference requests.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#listRequests
+- name: get_request
+  description: Get the detail of one inference request.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#getRequestDetail
+- name: get_inference_metrics
+  description: Read queue depth and throughput metrics.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#getGenerateMetrics
+- name: submit_training_job
+  description: Launch a training job from an uploaded dataset.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#submitTrainingJob
+- name: get_training_job
+  description: Get the status of a training job by job_hash.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#getTrainingJob
+- name: list_checkpoints
+  description: List checkpoints written by a training job.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#listCheckpoints
+- name: get_training_logs
+  description: Stream training logs for a model.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#getTrainingLogs
+- name: get_cluster_status
+  description: Read Slurm queue plus GPU and node counts.
+  source_operation: openapi/tensorwave-scalarlm-openapi.yml#getSlurmStatus
+excluded_from_proposal:
+- operations: [clearQueue, deleteTrainingJob, cancelTrainingJob, restartTrainingJob,
+    cancelSlurmJob, cancelPublish]
+  reason: Destructive or cluster-wide; should not be exposed as an unattended agent tool without
+    human-in-the-loop. See overlays/tensorwave-scalarlm-overlay.yaml.
+- operations: [publishToHuggingFace]
+  reason: Requires a caller-supplied Hugging Face write token in the request body and publishes
+    weights to a public third-party registry.
+- operations: [getWork, finishWork, getAdaptors, uploadGenerateData, downloadGenerateData]
+  reason: Worker-plane coordination, not a client-facing capability.
+- operations: [listGenerateEndpoints, listMegatronEndpoints, listHealthEndpoints,
+    listSlurmEndpoints]
+  reason: Route introspection; no agent value.
+notes: >-
+  Tool input schemas would be inherited from each backing operation's parameters and requestBody
+  in the derived OpenAPI. No tool crosswalk artifact is emitted because there is neither a
+  published MCP server nor a GraphQL surface to cross-walk against.

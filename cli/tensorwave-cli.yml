@@ -1,0 +1,66 @@
+generated: '2026-08-02'
+method: searched
+source: https://github.com/tensorwavecloud/ScalarLM#cli-commands
+docs: https://www.scalarlm.com/cli/
+name: scalarlm
+summary: 'TensorWave publishes no CLI for its GPU cloud control plane (that platform is driven
+  over SSH, Slurm sbatch/squeue and kubectl). The first-party CLI is ScalarLM''s, which comes in
+  two forms: a repository-local orchestration script that builds and runs a deployment, and a
+  pip-installed monitoring client that talks to a running deployment.'
+surfaces:
+- name: ./scalarlm
+  kind: repository script
+  install:
+  - method: git
+    command: git clone git@github.com:tensorwavecloud/scalarlm.git
+  scope: Builds, starts and tests a ScalarLM deployment from a checkout.
+  commands:
+  - command: up
+    description: Start the ScalarLM server (development server on localhost:8000 with an
+      OpenAI-compatible API).
+  - command: benchmark
+    description: Run performance benchmarks.
+  - command: llm-logs
+    description: View LLM logs.
+  - command: llm-ls
+    description: List available models.
+  - command: llm-plot
+    description: Plot training metrics.
+  - command: llm-squeue
+    description: View training queue status.
+  - command: test
+    description: Run tests.
+  - command: build-image
+    description: Build the Docker image.
+- name: scalarlm
+  kind: pip-installed monitoring CLI
+  install:
+  - method: pip
+    command: pip install scalarlm
+  package: packages/tensorwave-packages.yml#scalarlm
+  configuration:
+  - env: SCALARLM_API_URL
+    description: Base URL of the ScalarLM deployment to talk to.
+    example: export SCALARLM_API_URL="http://<your-deployment-ip>"
+  usage: scalarlm [-h] {logs,plot,ls,squeue} ...
+  commands:
+  - command: logs
+    description: Stream training/service logs from the deployment.
+    backing_operations:
+    - getTrainingLogs
+    - getServiceLogs
+  - command: plot
+    description: Plot training metrics.
+  - command: ls
+    description: List models deployed in the instance.
+    backing_operations:
+    - listDeployedModels
+  - command: squeue
+    description: Show the Slurm queue.
+    backing_operations:
+    - getMegatronSqueue
+    - getSlurmSqueue
+notes: 'backing_operations are operationIds in openapi/tensorwave-scalarlm-openapi.yml, matched
+  by command semantics against the CLI subcommands published in the ScalarLM README. The CLI
+  source was not read line by line, so these bindings are semantic rather than verified call
+  sites.'

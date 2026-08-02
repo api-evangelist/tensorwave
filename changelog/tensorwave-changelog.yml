@@ -1,0 +1,63 @@
+generated: '2026-08-02'
+method: searched
+source: https://github.com/tensorwavecloud/ScalarLM/releases
+summary: 'TensorWave publishes no dated changelog for its GPU cloud platform or its documentation
+  site. The one versioned, dated release surface in the estate is ScalarLM: GitHub releases on
+  tensorwavecloud/ScalarLM plus the PyPI release train for the `scalarlm` package. The API itself
+  is not separately versioned beyond the /v1 URI prefix.'
+scheme: semver-ish (ScalarLM release tags; PyPI package versions)
+current_version: '1.151'
+current_version_source: https://pypi.org/project/scalarlm/
+api_versioning:
+  style: uri-path
+  current: v1
+  note: See lifecycle/tensorwave-lifecycle.yml.
+entries:
+- version: '1.151'
+  date: '2026-06-12'
+  channel: pypi
+  breaking: unknown
+  highlights: Current published SDK/CLI release.
+- version: '1.1'
+  date: '2026-05-20'
+  channel: pypi
+  breaking: unknown
+- version: v1.0
+  date: '2026-03-31'
+  channel: github-release
+  title: ScalarLM v1.0
+  breaking: unknown
+  highlights: First 1.0 release of the ScalarLM stack.
+- version: '0.9940'
+  date: '2026-03-12'
+  channel: pypi
+- version: '0.9928'
+  date: '2026-02-12'
+  channel: pypi
+  note: Four patch releases (0.9925-0.9928) shipped the same day.
+- version: '0.998'
+  date: '2026-01-17'
+  channel: pypi
+- version: '0.997'
+  date: '2026-01-11'
+  channel: pypi
+- version: '0.994'
+  date: '2025-12-17'
+  channel: pypi
+- version: '0.992'
+  date: '2025-11-04'
+  channel: pypi
+- version: v0.99
+  date: '2025-09-11'
+  channel: github-release
+  title: v0.99 - GPT-OSS and Qwen3
+  breaking: unknown
+  highlights: Added GPT-OSS and Qwen3 model support.
+coverage:
+  github_releases: 2
+  pypi_versions: 30
+  window: 2025-09 to 2026-06
+notes: 'Release notes are thin: the two GitHub releases carry titles but the PyPI train has no
+  per-version notes, so breaking-vs-additive classification is recorded as unknown rather than
+  guessed. There is no product changelog for the TensorWave cloud itself; the trust center
+  Updates feed (security/tensorwave-trust-center.yml) is the only other dated public feed.'

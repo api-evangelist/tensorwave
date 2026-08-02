@@ -1,0 +1,62 @@
+generated: '2026-08-02'
+method: searched
+source: https://www.scalarlm.com/inference/
+spec_source: openapi/tensorwave-scalarlm-openapi.yml
+summary:
+  types: []
+  api_key_in: []
+  oauth2_flows: []
+  note: 'ScalarLM declares NO securitySchemes. This is a real finding, not a gap in the harvest:
+    the FastAPI application in tensorwavecloud/ScalarLM registers no authentication dependency on
+    any router, and the documented request examples on scalarlm.com send no credential of any
+    kind. A ScalarLM deployment is expected to be perimeter-protected by the operator (private
+    network, ingress auth, or an API gateway in front of it), not by the application.'
+schemes: []
+documented_examples:
+- source: https://www.scalarlm.com/inference/
+  request: |
+    curl https://gpt-oss.cray-lm.com/v1/chat/completions \
+        -H "Content-Type: application/json" \
+        -d '{"messages": [{"role": "user", "content": "..."}]}'
+  credentials: none
+- source: https://www.scalarlm.com/inference/
+  request: |
+    import scalarlm
+    scalarlm.api_url = "https://gpt-oss.cray-lm.com"
+    llm = scalarlm.SupermassiveIntelligence()
+  credentials: none
+  note: The Python client is configured with a base URL only; it takes no API key.
+credentials_in_payloads:
+- field: hf_token
+  operation: publishToHuggingFace
+  kind: third-party bearer token
+  description: 'A Hugging Face access token with write permission, supplied by the caller in the
+    PublishRequest body so ScalarLM can push a checkpoint to the Hub. It authenticates to Hugging
+    Face, not to ScalarLM.'
+  handling: 'Per the source docstring, the token is forwarded to sbatch via env-var export and is
+    never written to disk or argv on the API pod side.'
+platform_authentication:
+  scope: The TensorWave GPU cloud platform (not the ScalarLM API)
+  model: 'Not an API. Access to bare-metal nodes, Slurm and Kubernetes is by SSH public key,
+    managed per user; team membership and access are administered by org admins in the TensorWave
+    console.'
+  docs:
+  - https://docs.tensorwave.com/user-and-team-management/syncing-public-keys
+  - https://docs.tensorwave.com/user-and-team-management/managing-team-member-access
+  - https://docs.tensorwave.com/user-and-team-management/self-serve-inviting-users
+  - https://docs.tensorwave.com/slurm/access
+  mechanisms:
+  - ssh-public-key
+  - organization-role (admin vs member)
+oauth2: false
+oidc: false
+scopes_artifact: null
+scopes_note: No OAuth 2.0 surface exists, so no scopes/ artifact is emitted.
+risks:
+- id: unauthenticated-write-operations
+  severity: high
+  detail: 'With no application-level auth, every operation in the derived spec is reachable by any
+    caller who can reach the deployment, including destructive ones: clearQueue,
+    cancelTrainingJob, restartTrainingJob, deleteTrainingJob, cancelSlurmJob and
+    publishToHuggingFace. Operators must not expose a ScalarLM deployment directly to the public
+    internet.'
