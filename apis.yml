@@ -29,29 +29,16 @@ tags:
 - High Performance Computing
 - Data Centers
 apis:
-- aid: tensorwave:scalarlm
-  name: ScalarLM API
-  description: 'ScalarLM is the open-source (CC0-1.0) unified LLM training and inference stack
-    maintained and sponsored by TensorWave. A single deployment exposes an OpenAI-compatible
-    inference endpoint backed by vLLM (/v1/chat/completions, /v1/completions, /v1/models), a
-    queue-backed batch generate surface with worker coordination, a Megatron-LM training surface
-    dispatched through Slurm (chunked dataset upload, job control, checkpoints, publish-to-Hugging
-    Face), plus Slurm scheduler and health/metrics endpoints. It runs unchanged on AMD and NVIDIA
-    GPUs; TensorWave''s own deployments run on AMD MI300X.'
+- aid: tensorwave:tensorwave-generate-api
+  name: TensorWave Generate API
+  description: Queue-backed batch inference and worker coordination.
   humanURL: https://www.scalarlm.com/docs/
   baseURL: https://gpt-oss.cray-lm.com
   tags:
-  - Inference
-  - Model Training
-  - Machine Learning
-  - LLM
-  - OpenAI Compatible
-  - Slurm
+  - Generate
   properties:
   - type: OpenAPI
-    url: openapi/tensorwave-scalarlm-openapi.yml
-  - type: Overlay
-    url: overlays/tensorwave-scalarlm-overlay.yaml
+    url: openapi/tensorwave-generate-api-openapi.yml
   - type: Documentation
     url: https://www.scalarlm.com/docs/
   - type: APIReference
@@ -68,14 +55,123 @@ apis:
     url: errors/tensorwave-problem-types.yml
   - type: DataModel
     url: data-model/tensorwave-data-model.yml
-  - type: AgentSkill
-    url: skills/_index.yml
+- aid: tensorwave:tensorwave-health-api
+  name: TensorWave Health API
+  description: Health checks, service logs and metrics.
+  humanURL: https://www.scalarlm.com/docs/
+  baseURL: https://gpt-oss.cray-lm.com
+  tags:
+  - Health
+  properties:
+  - type: OpenAPI
+    url: openapi/tensorwave-health-api-openapi.yml
+  - type: Documentation
+    url: https://www.scalarlm.com/docs/
+  - type: APIReference
+    url: https://www.scalarlm.com/inference/
+  - type: GettingStarted
+    url: https://www.scalarlm.com/quick-start/
+  - type: SourceCode
+    url: https://github.com/tensorwavecloud/ScalarLM
+  - type: Authentication
+    url: authentication/tensorwave-authentication.yml
+  - type: Conventions
+    url: conventions/tensorwave-conventions.yml
+  - type: ErrorCatalog
+    url: errors/tensorwave-problem-types.yml
+  - type: DataModel
+    url: data-model/tensorwave-data-model.yml
+- aid: tensorwave:tensorwave-openai-api
+  name: TensorWave Open AI API
+  description: OpenAI-compatible inference endpoints proxied to vLLM.
+  humanURL: https://www.scalarlm.com/docs/
+  baseURL: https://gpt-oss.cray-lm.com
+  tags:
+  - OpenAI
+  properties:
+  - type: OpenAPI
+    url: openapi/tensorwave-openai-api-openapi.yml
+  - type: Documentation
+    url: https://www.scalarlm.com/docs/
+  - type: APIReference
+    url: https://www.scalarlm.com/inference/
+  - type: GettingStarted
+    url: https://www.scalarlm.com/quick-start/
+  - type: SourceCode
+    url: https://github.com/tensorwavecloud/ScalarLM
+  - type: Authentication
+    url: authentication/tensorwave-authentication.yml
+  - type: Conventions
+    url: conventions/tensorwave-conventions.yml
+  - type: ErrorCatalog
+    url: errors/tensorwave-problem-types.yml
+  - type: DataModel
+    url: data-model/tensorwave-data-model.yml
+- aid: tensorwave:tensorwave-slurm-api
+  name: TensorWave Slurm API
+  description: Slurm scheduler status and job control.
+  humanURL: https://www.scalarlm.com/docs/
+  baseURL: https://gpt-oss.cray-lm.com
+  tags:
+  - Slurm
+  properties:
+  - type: OpenAPI
+    url: openapi/tensorwave-slurm-api-openapi.yml
+  - type: Documentation
+    url: https://www.scalarlm.com/docs/
+  - type: APIReference
+    url: https://www.scalarlm.com/inference/
+  - type: GettingStarted
+    url: https://www.scalarlm.com/quick-start/
+  - type: SourceCode
+    url: https://github.com/tensorwavecloud/ScalarLM
+  - type: Authentication
+    url: authentication/tensorwave-authentication.yml
+  - type: Conventions
+    url: conventions/tensorwave-conventions.yml
+  - type: ErrorCatalog
+    url: errors/tensorwave-problem-types.yml
+  - type: DataModel
+    url: data-model/tensorwave-data-model.yml
+- aid: tensorwave:tensorwave-training-api
+  name: TensorWave Training API
+  description: >-
+    Megatron-LM training jobs, chunked dataset upload, checkpoints and Hugging Face publishing.
+  humanURL: https://www.scalarlm.com/docs/
+  baseURL: https://gpt-oss.cray-lm.com
+  tags:
+  - Training
+  properties:
+  - type: OpenAPI
+    url: openapi/tensorwave-training-api-openapi.yml
+  - type: Documentation
+    url: https://www.scalarlm.com/docs/
+  - type: APIReference
+    url: https://www.scalarlm.com/inference/
+  - type: GettingStarted
+    url: https://www.scalarlm.com/quick-start/
+  - type: SourceCode
+    url: https://github.com/tensorwavecloud/ScalarLM
+  - type: Authentication
+    url: authentication/tensorwave-authentication.yml
+  - type: Conventions
+    url: conventions/tensorwave-conventions.yml
+  - type: ErrorCatalog
+    url: errors/tensorwave-problem-types.yml
+  - type: DataModel
+    url: data-model/tensorwave-data-model.yml
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: AgentSkill
+  url: skills/tensorwave-batch-inference.md
+- type: MCPServer
+  url: mcp/tensorwave-mcp.yml
+- type: Overlay
+  url: overlays/tensorwave-scalarlm-overlay.yaml
 - type: TrustCenter
   url: security/tensorwave-trust-center.yml
 - type: Website
