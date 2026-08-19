@@ -1,0 +1,29 @@
+{
+  "provider": "tensorwave",
+  "sources": [
+    "tensorwave-generate-api-openapi.yml",
+    "tensorwave-health-api-openapi.yml",
+    "tensorwave-openai-api-openapi.yml",
+    "tensorwave-slurm-api-openapi.yml",
+    "tensorwave-training-api-openapi.yml"
+  ],
+  "outputs": [
+    "tensorwave-generate-api-openapi.yml",
+    "tensorwave-health-api-openapi.yml",
+    "tensorwave-openai-api-openapi.yml",
+    "tensorwave-slurm-api-openapi.yml",
+    "tensorwave-training-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "tensorwave-generate-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "tensorwave-health-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "tensorwave-openai-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "tensorwave-slurm-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "tensorwave-training-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "apis.yml register: already-registered"
+  ],
+  "skipped": []
+}

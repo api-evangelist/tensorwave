@@ -1,0 +1,59 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "ScalarLM Open AI API",
+    "version": "1.151"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "OpenAI",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List available models",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/models"
+          },
+          "docs": "Proxies the upstream vLLM server's /v1/models. Returns the OpenAI model list envelope."
+        },
+        {
+          "info": {
+            "name": "Create a completion",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/completions",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "OpenAI-compatible text completion. Proxied to the vLLM server; the request body is a vLLM CompletionRequest (OpenAI completions schema). Responses stream as text/event-stream."
+        },
+        {
+          "info": {
+            "name": "Create a chat completion",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/chat/completions",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "OpenAI-compatible chat completion. When stream is true the request is proxied straight to vLLM as an SSE stream; when false it is admitted to the queue-backed path (admission control -> coalescer -> SQLite inference work queue -> worker -> result router) and answered with a whitespace-heartbeat chunked JSON response."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

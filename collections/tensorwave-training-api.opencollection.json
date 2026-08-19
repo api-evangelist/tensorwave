@@ -1,0 +1,417 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "ScalarLM Training API",
+    "version": "1.151"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Training",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Submit a training job",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/train"
+          },
+          "docs": "Accepts a streamed upload of training data plus a job config and launches a Slurm training job."
+        },
+        {
+          "info": {
+            "name": "Begin a chunked training-data upload",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/upload/init",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Begin a chunked training-data upload"
+        },
+        {
+          "info": {
+            "name": "Upload one chunk of training data",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/upload/chunk",
+            "headers": [
+              {
+                "name": "X-Upload-Id",
+                "value": ""
+              },
+              {
+                "name": "X-Chunk-Index",
+                "value": ""
+              },
+              {
+                "name": "X-Chunk-Hash",
+                "value": ""
+              }
+            ]
+          },
+          "docs": "Chunk metadata travels in headers, the chunk bytes in the body."
+        },
+        {
+          "info": {
+            "name": "Finalize a chunked upload and launch training",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/upload/finalize",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Finalize a chunked upload and launch training"
+        },
+        {
+          "info": {
+            "name": "Get training job info",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/train/:job_hash",
+            "params": [
+              {
+                "name": "job_hash",
+                "value": "",
+                "type": "path",
+                "description": "Training job hash returned by the train operation."
+              }
+            ]
+          },
+          "docs": "Get training job info"
+        },
+        {
+          "info": {
+            "name": "Page through a job's training dataset",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/train/:job_hash/dataset",
+            "params": [
+              {
+                "name": "job_hash",
+                "value": "",
+                "type": "path",
+                "description": "Training job hash returned by the train operation."
+              },
+              {
+                "name": "offset",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "q",
+                "value": "",
+                "type": "query",
+                "description": "Free-text filter."
+              }
+            ]
+          },
+          "docs": "Page through a job's training dataset"
+        },
+        {
+          "info": {
+            "name": "Download a job's dataset.jsonlines",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/train/:job_hash/dataset/download",
+            "params": [
+              {
+                "name": "job_hash",
+                "value": "",
+                "type": "path",
+                "description": "Training job hash returned by the train operation."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "First N rows only."
+              }
+            ]
+          },
+          "docs": "Streams the dataset verbatim as an attachment. Omit limit for the whole file."
+        },
+        {
+          "info": {
+            "name": "List checkpoints written by a training job",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/train/:job_hash/checkpoints",
+            "params": [
+              {
+                "name": "job_hash",
+                "value": "",
+                "type": "path",
+                "description": "Training job hash returned by the train operation."
+              }
+            ]
+          },
+          "docs": "List checkpoints written by a training job"
+        },
+        {
+          "info": {
+            "name": "Publish a checkpoint to Hugging Face Hub",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/train/:job_hash/publish",
+            "params": [
+              {
+                "name": "job_hash",
+                "value": "",
+                "type": "path",
+                "description": "Training job hash returned by the train operation."
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Submits a Slurm publish job and returns immediately with the publish job id; poll getPublishStatus for progress. The Hugging Face token is forwarded to sbatch via env var and is never written to disk or argv on the API pod."
+        },
+        {
+          "info": {
+            "name": "Latest publish status for a training job",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/train/:job_hash/publish/status",
+            "params": [
+              {
+                "name": "job_hash",
+                "value": "",
+                "type": "path",
+                "description": "Training job hash returned by the train operation."
+              }
+            ]
+          },
+          "docs": "Latest publish status for a training job"
+        },
+        {
+          "info": {
+            "name": "Cancel an in-flight publish job",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/train/:job_hash/publish/cancel",
+            "params": [
+              {
+                "name": "job_hash",
+                "value": "",
+                "type": "path",
+                "description": "Training job hash returned by the train operation."
+              }
+            ]
+          },
+          "docs": "scancels the publish job and returns the resulting status."
+        },
+        {
+          "info": {
+            "name": "Tail the publish job logs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/train/:job_hash/publish/logs",
+            "params": [
+              {
+                "name": "job_hash",
+                "value": "",
+                "type": "path",
+                "description": "Training job hash returned by the train operation."
+              },
+              {
+                "name": "starting_line_number",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "starting_byte_offset",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "tail",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Tail the publish job logs"
+        },
+        {
+          "info": {
+            "name": "Stream training logs for a model",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/train/logs/:model_name",
+            "params": [
+              {
+                "name": "model_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "starting_line_number",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Stream training logs for a model"
+        },
+        {
+          "info": {
+            "name": "Cancel a training job",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/cancel/:job_hash",
+            "params": [
+              {
+                "name": "job_hash",
+                "value": "",
+                "type": "path",
+                "description": "Training job hash returned by the train operation."
+              }
+            ]
+          },
+          "docs": "Cancel a training job"
+        },
+        {
+          "info": {
+            "name": "Restart a training job",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/restart/:job_hash",
+            "params": [
+              {
+                "name": "job_hash",
+                "value": "",
+                "type": "path",
+                "description": "Training job hash returned by the train operation."
+              }
+            ]
+          },
+          "docs": "Restart a training job"
+        },
+        {
+          "info": {
+            "name": "Delete a training job",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/delete/:job_hash",
+            "params": [
+              {
+                "name": "job_hash",
+                "value": "",
+                "type": "path",
+                "description": "Training job hash returned by the train operation."
+              }
+            ]
+          },
+          "docs": "Delete a training job"
+        },
+        {
+          "info": {
+            "name": "List models deployed in this ScalarLM instance",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/list_models"
+          },
+          "docs": "List models deployed in this ScalarLM instance"
+        },
+        {
+          "info": {
+            "name": "Slurm queue as seen by the training API",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/squeue"
+          },
+          "docs": "Slurm queue as seen by the training API"
+        },
+        {
+          "info": {
+            "name": "Number of GPUs visible to the deployment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/gpu_count"
+          },
+          "docs": "Number of GPUs visible to the deployment"
+        },
+        {
+          "info": {
+            "name": "Number of nodes visible to the deployment",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/node_count"
+          },
+          "docs": "Number of nodes visible to the deployment"
+        },
+        {
+          "info": {
+            "name": "List routes registered on the training router",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/megatron/endpoints"
+          },
+          "docs": "List routes registered on the training router"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

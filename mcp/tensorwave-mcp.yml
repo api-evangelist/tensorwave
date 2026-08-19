@@ -12,11 +12,9 @@ search_result:
   - PyPI (tensorwave, scalarlm)
   - DNS for mcp.tensorwave.com (NXDOMAIN)
   conclusion: TensorWave publishes no hosted or packaged MCP server.
-pointer_policy: >-
-  This file is a DESIGN CANDIDATE only. No `type: MCPServer` pointer is wired into apis.yml,
-  because no MCP server exists. Wiring one would credit TensorWave with an agent surface it does
-  not ship. If TensorWave publishes a server, replace this file with the searched artifact and
-  add the pointer then.
+pointer_policy: 'This file is a DESIGN CANDIDATE only. No `type: MCPServer` pointer is wired into apis.yml,
+  because no MCP server exists. Wiring one would credit TensorWave with an agent surface it does not ship.
+  If TensorWave publishes a server, replace this file with the searched artifact and add the pointer then.'
 server:
   name: scalarlm
   transport: http
@@ -59,19 +57,37 @@ proposed_tools:
   description: Read Slurm queue plus GPU and node counts.
   source_operation: openapi/tensorwave-scalarlm-openapi.yml#getSlurmStatus
 excluded_from_proposal:
-- operations: [clearQueue, deleteTrainingJob, cancelTrainingJob, restartTrainingJob,
-    cancelSlurmJob, cancelPublish]
-  reason: Destructive or cluster-wide; should not be exposed as an unattended agent tool without
-    human-in-the-loop. See overlays/tensorwave-scalarlm-overlay.yaml.
-- operations: [publishToHuggingFace]
-  reason: Requires a caller-supplied Hugging Face write token in the request body and publishes
-    weights to a public third-party registry.
-- operations: [getWork, finishWork, getAdaptors, uploadGenerateData, downloadGenerateData]
+- operations:
+  - clearQueue
+  - deleteTrainingJob
+  - cancelTrainingJob
+  - restartTrainingJob
+  - cancelSlurmJob
+  - cancelPublish
+  reason: Destructive or cluster-wide; should not be exposed as an unattended agent tool without human-in-the-loop.
+    See overlays/tensorwave-scalarlm-overlay.yaml.
+- operations:
+  - publishToHuggingFace
+  reason: Requires a caller-supplied Hugging Face write token in the request body and publishes weights
+    to a public third-party registry.
+- operations:
+  - getWork
+  - finishWork
+  - getAdaptors
+  - uploadGenerateData
+  - downloadGenerateData
   reason: Worker-plane coordination, not a client-facing capability.
-- operations: [listGenerateEndpoints, listMegatronEndpoints, listHealthEndpoints,
-    listSlurmEndpoints]
+- operations:
+  - listGenerateEndpoints
+  - listMegatronEndpoints
+  - listHealthEndpoints
+  - listSlurmEndpoints
   reason: Route introspection; no agent value.
-notes: >-
-  Tool input schemas would be inherited from each backing operation's parameters and requestBody
-  in the derived OpenAPI. No tool crosswalk artifact is emitted because there is neither a
-  published MCP server nor a GraphQL surface to cross-walk against.
+notes: Tool input schemas would be inherited from each backing operation's parameters and requestBody
+  in the derived OpenAPI. No tool crosswalk artifact is emitted because there is neither a published MCP
+  server nor a GraphQL surface to cross-walk against.
+deployment:
+  mode: none
+  verified: derived
+  checked: '2026-08-12'
+  source: catalog MCP census

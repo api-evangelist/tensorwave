@@ -1,0 +1,100 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "ScalarLM Health API",
+    "version": "1.151"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Health",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Service health",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/health"
+          },
+          "docs": "Service health"
+        },
+        {
+          "info": {
+            "name": "Liveness probe",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/health/keepalive"
+          },
+          "docs": "Liveness probe"
+        },
+        {
+          "info": {
+            "name": "Tail logs for one service",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/health/logs/:service_name",
+            "params": [
+              {
+                "name": "service_name",
+                "value": "",
+                "type": "path"
+              },
+              {
+                "name": "starting_line_number",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "starting_byte_offset",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "tail",
+                "value": "",
+                "type": "query"
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query"
+              }
+            ]
+          },
+          "docs": "Tail logs for one service"
+        },
+        {
+          "info": {
+            "name": "List routes registered on the health router",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/health/endpoints"
+          },
+          "docs": "List routes registered on the health router"
+        },
+        {
+          "info": {
+            "name": "Prometheus metrics exposition",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/metrics"
+          },
+          "docs": "Prometheus metrics exposition"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

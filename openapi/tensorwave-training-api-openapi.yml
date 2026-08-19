@@ -1,0 +1,803 @@
+openapi: 3.2.0
+info:
+  title: ScalarLM Training API
+  version: '1.151'
+  summary: Unified LLM inference and training API from the ScalarLM stack, maintained and sponsored by TensorWave.
+  description: 'ScalarLM is TensorWave''s open-source (CC0-1.0) unified training and inference stack. A single deployment exposes an OpenAI-compatible inference endpoint backed by vLLM, a queue-backed batch generate surface, a Megatron-LM training surface dispatched through Slurm, and health/observability endpoints.
+
+
+    PROVENANCE: this document is DERIVED by API Evangelist from the first-party FastAPI source in github.com/tensorwavecloud/ScalarLM. Every path, method, parameter and schema below was read from the committed route decorators and Pydantic models listed in info.x-evidence.sources. TensorWave does not publish a static OpenAPI document; a live ScalarLM deployment serves FastAPI''s own generated spec at /openapi.json. This is not a provider-published artifact, and the operationIds here are API Evangelist naming rather than FastAPI''s generated ids.'
+  license:
+    name: CC0-1.0
+    url: https://creativecommons.org/publicdomain/zero/1.0/
+  contact:
+    name: TensorWave
+    url: https://tensorwave.com/connect
+  x-evidence:
+    method: derived
+    derived_from: source-code
+    derived_on: '2026-08-02'
+    repository: https://github.com/tensorwavecloud/ScalarLM
+    repository_license: CC0-1.0
+    sources:
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/main.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/openai_v1_router.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/megatron_router.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/health_router.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/generate_router.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/slurm_router.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/request_types/
+    note: Route table read from the FastAPI APIRouter prefixes in main.py (openai_v1_router, megatron_router '/megatron', health_router '/health' and generate_router '/generate' are all mounted under '/v1'; slurm_router '/slurm' is mounted at the app root). Schemas transcribed from the Pydantic models under routers/request_types/. CompletionRequest and ChatCompletionRequest are vLLM types re-exported by ScalarLM and are modelled as open objects rather than reproduced field by field.
+    live_spec_hint: <deployment>/openapi.json (FastAPI generated)
+    documented_deployment:
+      url: https://gpt-oss.cray-lm.com
+      source: https://www.scalarlm.com/inference/
+      probed: '2026-08-02'
+      http_status: 530
+      note: Documented demo deployment; origin unreachable (Cloudflare 530) at probe time.
+servers:
+- url: https://gpt-oss.cray-lm.com
+  description: Public ScalarLM demo deployment documented at scalarlm.com/inference (origin returned HTTP 530 when probed 2026-08-02).
+- url: http://localhost:8000
+  description: Local development server started by ./scalarlm up.
+tags:
+- name: Training
+  description: Megatron-LM training jobs, chunked dataset upload, checkpoints and Hugging Face publishing.
+paths:
+  /v1/megatron/train:
+    post:
+      operationId: submitTrainingJob
+      summary: Submit a training job
+      tags:
+      - Training
+      description: Accepts a streamed upload of training data plus a job config and launches a Slurm training job.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainResponse'
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/upload/init:
+    post:
+      operationId: initChunkedUpload
+      summary: Begin a chunked training-data upload
+      tags:
+      - Training
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadInitRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadInitResponse'
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/upload/chunk:
+    post:
+      operationId: uploadChunk
+      summary: Upload one chunk of training data
+      tags:
+      - Training
+      description: Chunk metadata travels in headers, the chunk bytes in the body.
+      parameters:
+      - name: X-Upload-Id
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Upload id from initChunkedUpload.
+      - name: X-Chunk-Index
+        in: header
+        required: true
+        schema:
+          type: integer
+        description: Zero-based chunk index.
+      - name: X-Chunk-Hash
+        in: header
+        required: true
+        schema:
+          type: string
+        description: Hash of this chunk.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadChunkResponse'
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/upload/finalize:
+    post:
+      operationId: finalizeChunkedUpload
+      summary: Finalize a chunked upload and launch training
+      tags:
+      - Training
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadFinalizeRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrainResponse'
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/train/{job_hash}:
+    get:
+      operationId: getTrainingJob
+      summary: Get training job info
+      tags:
+      - Training
+      parameters:
+      - name: job_hash
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Training job hash returned by the train operation.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/train/{job_hash}/dataset:
+    get:
+      operationId: getTrainingDataset
+      summary: Page through a job's training dataset
+      tags:
+      - Training
+      parameters:
+      - name: job_hash
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Training job hash returned by the train operation.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+        description: Free-text filter.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/train/{job_hash}/dataset/download:
+    get:
+      operationId: downloadTrainingDataset
+      summary: Download a job's dataset.jsonlines
+      tags:
+      - Training
+      description: Streams the dataset verbatim as an attachment. Omit limit for the whole file.
+      parameters:
+      - name: job_hash
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Training job hash returned by the train operation.
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+        description: First N rows only.
+      responses:
+        '200':
+          description: The job's dataset.jsonlines.
+          content:
+            application/x-ndjson:
+              schema:
+                type: string
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/train/{job_hash}/checkpoints:
+    get:
+      operationId: listCheckpoints
+      summary: List checkpoints written by a training job
+      tags:
+      - Training
+      parameters:
+      - name: job_hash
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Training job hash returned by the train operation.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/train/{job_hash}/publish:
+    post:
+      operationId: publishToHuggingFace
+      summary: Publish a checkpoint to Hugging Face Hub
+      tags:
+      - Training
+      description: Submits a Slurm publish job and returns immediately with the publish job id; poll getPublishStatus for progress. The Hugging Face token is forwarded to sbatch via env var and is never written to disk or argv on the API pod.
+      parameters:
+      - name: job_hash
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Training job hash returned by the train operation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/train/{job_hash}/publish/status:
+    get:
+      operationId: getPublishStatus
+      summary: Latest publish status for a training job
+      tags:
+      - Training
+      parameters:
+      - name: job_hash
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Training job hash returned by the train operation.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/train/{job_hash}/publish/cancel:
+    post:
+      operationId: cancelPublish
+      summary: Cancel an in-flight publish job
+      tags:
+      - Training
+      description: scancels the publish job and returns the resulting status.
+      parameters:
+      - name: job_hash
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Training job hash returned by the train operation.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/train/{job_hash}/publish/logs:
+    get:
+      operationId: getPublishLogs
+      summary: Tail the publish job logs
+      tags:
+      - Training
+      parameters:
+      - name: job_hash
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Training job hash returned by the train operation.
+      - name: starting_line_number
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+      - name: starting_byte_offset
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: tail
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/train/logs/{model_name}:
+    get:
+      operationId: getTrainingLogs
+      summary: Stream training logs for a model
+      tags:
+      - Training
+      parameters:
+      - name: model_name
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: starting_line_number
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 0
+      responses:
+        '200':
+          description: Server-sent event stream of training log lines.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/cancel/{job_hash}:
+    post:
+      operationId: cancelTrainingJob
+      summary: Cancel a training job
+      tags:
+      - Training
+      parameters:
+      - name: job_hash
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Training job hash returned by the train operation.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/restart/{job_hash}:
+    post:
+      operationId: restartTrainingJob
+      summary: Restart a training job
+      tags:
+      - Training
+      parameters:
+      - name: job_hash
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Training job hash returned by the train operation.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/delete/{job_hash}:
+    post:
+      operationId: deleteTrainingJob
+      summary: Delete a training job
+      tags:
+      - Training
+      parameters:
+      - name: job_hash
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Training job hash returned by the train operation.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/list_models:
+    get:
+      operationId: listDeployedModels
+      summary: List models deployed in this ScalarLM instance
+      tags:
+      - Training
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListModelsResponse'
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/squeue:
+    get:
+      operationId: getMegatronSqueue
+      summary: Slurm queue as seen by the training API
+      tags:
+      - Training
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SqueueResponse'
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/gpu_count:
+    get:
+      operationId: getGpuCount
+      summary: Number of GPUs visible to the deployment
+      tags:
+      - Training
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetGPUCountResponse'
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/node_count:
+    get:
+      operationId: getNodeCount
+      summary: Number of nodes visible to the deployment
+      tags:
+      - Training
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetNodeCountResponse'
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/megatron/endpoints:
+    get:
+      operationId: listMegatronEndpoints
+      summary: List routes registered on the training router
+      tags:
+      - Training
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    UploadFinalizeRequest:
+      type: object
+      required:
+      - upload_id
+      properties:
+        upload_id:
+          type: string
+    SqueueResponse:
+      type: object
+      properties:
+        squeue_output:
+          type:
+          - string
+          - 'null'
+        error_message:
+          type:
+          - string
+          - 'null'
+    PublishRequest:
+      type: object
+      required:
+      - repo_id
+      - hf_token
+      properties:
+        mode:
+          type: string
+          default: merged
+          description: merged to fold LoRA into base, adapter for a PEFT-format adapter repo.
+        repo_id:
+          type: string
+          description: HuggingFace repo to push to (owner/name).
+        private:
+          type: boolean
+          default: false
+          description: Create the repo as private if it doesn't exist.
+        hf_token:
+          type: string
+          description: HuggingFace access token with write permission.
+        checkpoint:
+          type:
+          - string
+          - 'null'
+          description: Basename of checkpoint_<step>.pt to publish. Defaults to latest.
+        lora_alpha:
+          type:
+          - integer
+          - 'null'
+          description: Override the lora_alpha used at merge time.
+        commit_message:
+          type:
+          - string
+          - 'null'
+          description: HF commit message; auto-generated if omitted.
+    UploadInitResponse:
+      type: object
+      required:
+      - upload_id
+      properties:
+        upload_id:
+          type: string
+        received_chunks:
+          type: array
+          items:
+            type: integer
+          default: []
+    TrainResponse:
+      type: object
+      required:
+      - job_status
+      - job_config
+      properties:
+        job_status:
+          type: object
+          additionalProperties: true
+        job_config:
+          type: object
+          additionalProperties: true
+        deployed:
+          type:
+          - boolean
+          - 'null'
+          default: false
+    UploadChunkResponse:
+      type: object
+      required:
+      - upload_id
+      - chunk_index
+      - received
+      - bytes_written
+      properties:
+        upload_id:
+          type: string
+        chunk_index:
+          type: integer
+        received:
+          type: boolean
+        bytes_written:
+          type: integer
+    GetNodeCountResponse:
+      type: object
+      required:
+      - node_count
+      properties:
+        node_count:
+          type: integer
+    ListModelsResponse:
+      type: object
+      required:
+      - models
+      properties:
+        models:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    GetGPUCountResponse:
+      type: object
+      required:
+      - gpu_count
+      properties:
+        gpu_count:
+          type: integer
+    ValidationError:
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      properties:
+        loc:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+        msg:
+          type: string
+        type:
+          type: string
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    UploadInitRequest:
+      type: object
+      required:
+      - total_size
+      - total_hash
+      - chunk_size
+      - num_chunks
+      - params
+      properties:
+        total_size:
+          type: integer
+        total_hash:
+          type: string
+        chunk_size:
+          type: integer
+        num_chunks:
+          type: integer
+        compressed:
+          type: boolean
+          default: true
+        params:
+          type: object
+          additionalProperties: true

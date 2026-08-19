@@ -1,0 +1,69 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "ScalarLM Slurm API",
+    "version": "1.151"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Slurm",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Slurm cluster status",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/slurm/status"
+          },
+          "docs": "Queue information plus GPU and node counts."
+        },
+        {
+          "info": {
+            "name": "Slurm queue information",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/slurm/squeue"
+          },
+          "docs": "Slurm queue information"
+        },
+        {
+          "info": {
+            "name": "Cancel a Slurm job by id",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/slurm/cancel/:job_id",
+            "params": [
+              {
+                "name": "job_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Cancel a Slurm job by id"
+        },
+        {
+          "info": {
+            "name": "List routes registered on the Slurm router",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/slurm/endpoints"
+          },
+          "docs": "List routes registered on the Slurm router"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

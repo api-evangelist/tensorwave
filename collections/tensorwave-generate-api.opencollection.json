@@ -1,0 +1,195 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "ScalarLM Generate API",
+    "version": "1.151"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Generate",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Submit a batch of prompts to the inference queue",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Enqueues a batch of independent inference requests. Each prompt entry is a bare string, a {prompt: ...} object, or a {messages: [...]} object rendered with the model chat template at enqueue time."
+        },
+        {
+          "info": {
+            "name": "Fetch results for queued request ids",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate/get_results",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Fetch results for queued request ids"
+        },
+        {
+          "info": {
+            "name": "Pull work items from the inference queue",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate/get_work",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Worker-facing: claims up to batch_size queued requests plus any new adaptors."
+        },
+        {
+          "info": {
+            "name": "Return completed work to the queue",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate/finish_work",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Worker-facing: acknowledges one or more claimed requests with their response, error and token/flop accounting."
+        },
+        {
+          "info": {
+            "name": "Upload inference payload data",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate/upload"
+          },
+          "docs": "Upload inference payload data"
+        },
+        {
+          "info": {
+            "name": "Download the payload for a request id",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate/download",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Download the payload for a request id"
+        },
+        {
+          "info": {
+            "name": "Clear the inference work queue",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate/clear_queue"
+          },
+          "docs": "Clear the inference work queue"
+        },
+        {
+          "info": {
+            "name": "List adaptors newer than the caller's loaded set",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate/get_adaptors",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "List adaptors newer than the caller's loaded set"
+        },
+        {
+          "info": {
+            "name": "Inference queue metrics",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate/metrics"
+          },
+          "docs": "Inference queue metrics"
+        },
+        {
+          "info": {
+            "name": "List recent inference requests",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate/list_requests",
+            "params": [
+              {
+                "name": "cursor",
+                "value": "",
+                "type": "query",
+                "description": "Opaque timestamp cursor for pagination."
+              },
+              {
+                "name": "limit",
+                "value": "",
+                "type": "query",
+                "description": "Page size."
+              }
+            ]
+          },
+          "docs": "List recent inference requests"
+        },
+        {
+          "info": {
+            "name": "Get one inference request",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate/request/:request_id",
+            "params": [
+              {
+                "name": "request_id",
+                "value": "",
+                "type": "path"
+              }
+            ]
+          },
+          "docs": "Get one inference request"
+        },
+        {
+          "info": {
+            "name": "List routes registered on the generate router",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://gpt-oss.cray-lm.com/v1/generate/endpoints"
+          },
+          "docs": "List routes registered on the generate router"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

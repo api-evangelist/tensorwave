@@ -1,0 +1,169 @@
+openapi: 3.2.0
+info:
+  title: ScalarLM Slurm API
+  version: '1.151'
+  summary: Unified LLM inference and training API from the ScalarLM stack, maintained and sponsored by TensorWave.
+  description: 'ScalarLM is TensorWave''s open-source (CC0-1.0) unified training and inference stack. A single deployment exposes an OpenAI-compatible inference endpoint backed by vLLM, a queue-backed batch generate surface, a Megatron-LM training surface dispatched through Slurm, and health/observability endpoints.
+
+
+    PROVENANCE: this document is DERIVED by API Evangelist from the first-party FastAPI source in github.com/tensorwavecloud/ScalarLM. Every path, method, parameter and schema below was read from the committed route decorators and Pydantic models listed in info.x-evidence.sources. TensorWave does not publish a static OpenAPI document; a live ScalarLM deployment serves FastAPI''s own generated spec at /openapi.json. This is not a provider-published artifact, and the operationIds here are API Evangelist naming rather than FastAPI''s generated ids.'
+  license:
+    name: CC0-1.0
+    url: https://creativecommons.org/publicdomain/zero/1.0/
+  contact:
+    name: TensorWave
+    url: https://tensorwave.com/connect
+  x-evidence:
+    method: derived
+    derived_from: source-code
+    derived_on: '2026-08-02'
+    repository: https://github.com/tensorwavecloud/ScalarLM
+    repository_license: CC0-1.0
+    sources:
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/main.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/openai_v1_router.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/megatron_router.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/health_router.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/generate_router.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/slurm_router.py
+    - https://raw.githubusercontent.com/tensorwavecloud/ScalarLM/main/infra/cray_infra/api/fastapi/routers/request_types/
+    note: Route table read from the FastAPI APIRouter prefixes in main.py (openai_v1_router, megatron_router '/megatron', health_router '/health' and generate_router '/generate' are all mounted under '/v1'; slurm_router '/slurm' is mounted at the app root). Schemas transcribed from the Pydantic models under routers/request_types/. CompletionRequest and ChatCompletionRequest are vLLM types re-exported by ScalarLM and are modelled as open objects rather than reproduced field by field.
+    live_spec_hint: <deployment>/openapi.json (FastAPI generated)
+    documented_deployment:
+      url: https://gpt-oss.cray-lm.com
+      source: https://www.scalarlm.com/inference/
+      probed: '2026-08-02'
+      http_status: 530
+      note: Documented demo deployment; origin unreachable (Cloudflare 530) at probe time.
+servers:
+- url: https://gpt-oss.cray-lm.com
+  description: Public ScalarLM demo deployment documented at scalarlm.com/inference (origin returned HTTP 530 when probed 2026-08-02).
+- url: http://localhost:8000
+  description: Local development server started by ./scalarlm up.
+tags:
+- name: Slurm
+  description: Slurm scheduler status and job control.
+paths:
+  /slurm/status:
+    get:
+      operationId: getSlurmStatus
+      summary: Slurm cluster status
+      tags:
+      - Slurm
+      description: Queue information plus GPU and node counts.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /slurm/squeue:
+    get:
+      operationId: getSlurmSqueue
+      summary: Slurm queue information
+      tags:
+      - Slurm
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SqueueResponse'
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /slurm/cancel/{job_id}:
+    post:
+      operationId: cancelSlurmJob
+      summary: Cancel a Slurm job by id
+      tags:
+      - Slurm
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /slurm/endpoints:
+    get:
+      operationId: listSlurmEndpoints
+      summary: List routes registered on the Slurm router
+      tags:
+      - Slurm
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '422':
+          description: Validation error (FastAPI request validation).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    SqueueResponse:
+      type: object
+      properties:
+        squeue_output:
+          type:
+          - string
+          - 'null'
+        error_message:
+          type:
+          - string
+          - 'null'
+    ValidationError:
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      properties:
+        loc:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+        msg:
+          type: string
+        type:
+          type: string
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
