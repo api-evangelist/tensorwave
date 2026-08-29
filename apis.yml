@@ -11,6 +11,19 @@ description: 'TensorWave is a Las Vegas-headquartered AI cloud provider that bui
   alongside RelationalAI, which exposes an OpenAI-compatible inference endpoint backed by vLLM
   together with a Megatron-LM training surface from a single deployment.'
 url: https://raw.githubusercontent.com/api-evangelist/tensorwave/refs/heads/main/apis.yml
+deliveryModel:
+  model: unknown
+  open_source: unknown
+  commercial: true
+  callable_host: true
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - openapi
+  - pricing
+  - repository-unlicensed
+  generated: '2026-08-28'
+  method: derived
 image: https://cdn.builder.io/api/v1/image/assets%2Ff941d509b8ea45f8972dd215996c7055%2Fdb1d4443bf134999962dbc3ab17eb3e6
 x-type: company
 x-source: harvest:secondary-market
@@ -177,6 +190,10 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: IssueTracker
+  url: https://github.com/tensorwavecloud/ScalarLM/issues
+- type: Releases
+  url: https://github.com/tensorwavecloud/ScalarLM/releases
 - type: AgentSkill
   url: skills/tensorwave-batch-inference.md
 - type: MCPServer
