@@ -1,0 +1,48 @@
+slug: tensorwave
+provider: TensorWave
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Electrical Components & Equipment
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 3
+edges:
+- tag: Training
+  spec_file: tensorwave-training-api-openapi.yml
+  capability_id: BC-610.60
+  capability_id_l1: BC-610
+  capability_name: Artificial Intelligence Management
+  confidence: 0.85
+  evidence: POST /v1/megatron/train 'Submit a training job'; GET /v1/megatron/train/{job_hash}/checkpoints
+    'List checkpoints written by a training job'; POST .../publish 'Publish a checkpoint to Hugging Face
+    Hub'
+  reason: Model training job submission, training dataset upload, checkpoint inventory and model publishing
+    constitute the ML model lifecycle / MLOps, which is Artificial Intelligence Management.
+- tag: Generate
+  spec_file: tensorwave-generate-api-openapi.yml
+  capability_id: BC-610.60
+  capability_id_l1: BC-610
+  capability_name: Artificial Intelligence Management
+  confidence: 0.75
+  evidence: POST /v1/generate 'Submit a batch of prompts to the inference queue'; GET /v1/generate/metrics
+    'Inference queue metrics'
+  reason: The operations run LLM inference workloads (batch prompt submission, queue work distribution,
+    adaptor listing) on the vendor's training/inference stack. That is AI/ML model serving and MLOps,
+    i.e. Artificial Intelligence Management. Some ambiguity because much of the surface is queue plumbing
+    rather than model governance, hence 0.75.
+- tag: OpenAI
+  spec_file: tensorwave-openai-api-openapi.yml
+  capability_id: BC-610.60
+  capability_id_l1: BC-610
+  capability_name: Artificial Intelligence Management
+  confidence: 0.75
+  evidence: POST /v1/chat/completions 'Create a chat completion'; GET /v1/models 'List available models'
+  reason: An OpenAI-compatible inference surface exposing model listing and completion generation — operating
+    ML models in production, which falls under Artificial Intelligence Management. It is a thin surface,
+    so 0.75 rather than higher.

@@ -190,6 +190,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/tensorwave-capability-edges.yml
+  name: TensorWave Business Capability Map
 - type: IssueTracker
   url: https://github.com/tensorwavecloud/ScalarLM/issues
 - type: Releases
