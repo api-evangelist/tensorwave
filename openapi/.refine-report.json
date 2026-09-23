@@ -1,11 +1,7 @@
 {
   "provider": "tensorwave",
   "sources": [
-    "tensorwave-generate-api-openapi.yml",
-    "tensorwave-health-api-openapi.yml",
-    "tensorwave-openai-api-openapi.yml",
-    "tensorwave-slurm-api-openapi.yml",
-    "tensorwave-training-api-openapi.yml"
+    "_original/tensorwave-scalarlm-openapi.yml"
   ],
   "outputs": [
     "tensorwave-generate-api-openapi.yml",
@@ -18,12 +14,15 @@
   "errors": [],
   "warnings": [],
   "notes": [
-    "tensorwave-generate-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "tensorwave-health-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "tensorwave-openai-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "tensorwave-slurm-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "tensorwave-training-api-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
+    "tensorwave-scalarlm-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
     "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "tensorwave-generate-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "tensorwave-health-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "tensorwave-openai-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "tensorwave-slurm-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "tensorwave-training-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

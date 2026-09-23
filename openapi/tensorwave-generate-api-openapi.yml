@@ -3,10 +3,7 @@ info:
   title: ScalarLM Generate API
   version: '1.151'
   summary: Unified LLM inference and training API from the ScalarLM stack, maintained and sponsored by TensorWave.
-  description: 'ScalarLM is TensorWave''s open-source (CC0-1.0) unified training and inference stack. A single deployment exposes an OpenAI-compatible inference endpoint backed by vLLM, a queue-backed batch generate surface, a Megatron-LM training surface dispatched through Slurm, and health/observability endpoints.
-
-
-    PROVENANCE: this document is DERIVED by API Evangelist from the first-party FastAPI source in github.com/tensorwavecloud/ScalarLM. Every path, method, parameter and schema below was read from the committed route decorators and Pydantic models listed in info.x-evidence.sources. TensorWave does not publish a static OpenAPI document; a live ScalarLM deployment serves FastAPI''s own generated spec at /openapi.json. This is not a provider-published artifact, and the operationIds here are API Evangelist naming rather than FastAPI''s generated ids.'
+  description: ScalarLM is TensorWave's open-source (CC0-1.0) unified training and inference stack.
   license:
     name: CC0-1.0
     url: https://creativecommons.org/publicdomain/zero/1.0/
@@ -339,6 +336,36 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    GetWorkResponse:
+      type: object
+      required:
+      - prompt
+      - request_id
+      - request_type
+      properties:
+        prompt:
+          oneOf:
+          - type: string
+          - type: object
+        request_id:
+          type: string
+        request_type:
+          type: string
+        model:
+          type:
+          - string
+          - 'null'
+        max_tokens:
+          type:
+          - integer
+          - 'null'
     GetWorkResponses:
       type: object
       required:
@@ -351,15 +378,75 @@ components:
             $ref: '#/components/schemas/GetWorkResponse'
         new_adaptors:
           $ref: '#/components/schemas/GetAdaptorsResponse'
-    GetResultsRequest:
+    GenerateResponse:
       type: object
       required:
-      - request_ids
+      - results
       properties:
-        request_ids:
+        results:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/Result'
+    DownloadRequest:
+      type: object
+      required:
+      - request_id
+      properties:
+        request_id:
+          type: string
+    MetricsResponse:
+      type: object
+      required:
+      - queue_depth
+      - total_completed_requests
+      - total_completed_tokens
+      - total_completed_response_time
+      - tokens_per_second
+      - requests_per_second
+      - flops_per_second
+      properties:
+        queue_depth:
+          type: integer
+        total_completed_requests:
+          type: integer
+        total_completed_tokens:
+          type: integer
+        total_completed_response_time:
+          type: number
+        tokens_per_second:
+          type: number
+        requests_per_second:
+          type: number
+        flops_per_second:
+          type: number
+    UploadResult:
+      type: object
+      required:
+      - request_id
+      properties:
+        request_id:
+          type: string
+        error:
+          type:
+          - string
+          - 'null'
+    ValidationError:
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      properties:
+        loc:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+        msg:
+          type: string
+        type:
+          type: string
     FinishWorkRequest:
       type: object
       required:
@@ -448,22 +535,6 @@ components:
           type:
           - string
           - 'null'
-    DownloadRequest:
-      type: object
-      required:
-      - request_id
-      properties:
-        request_id:
-          type: string
-    GenerateResponse:
-      type: object
-      required:
-      - results
-      properties:
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Result'
     FinishWorkRequests:
       type: object
       required:
@@ -473,41 +544,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FinishWorkRequest'
-    ValidationError:
+    GetAdaptorsResponse:
       type: object
       required:
-      - loc
-      - msg
-      - type
+      - new_adaptors
       properties:
-        loc:
+        new_adaptors:
           type: array
           items:
-            oneOf:
-            - type: string
-            - type: integer
-        msg:
-          type: string
-        type:
-          type: string
-    HTTPValidationError:
-      type: object
-      properties:
-        detail:
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidationError'
-    UploadResult:
-      type: object
-      required:
-      - request_id
-      properties:
-        request_id:
-          type: string
-        error:
-          type:
-          - string
-          - 'null'
+            type: string
     GetAdaptorsRequest:
       type: object
       required:
@@ -515,31 +560,15 @@ components:
       properties:
         loaded_adaptor_count:
           type: integer
-    MetricsResponse:
+    GetResultsRequest:
       type: object
       required:
-      - queue_depth
-      - total_completed_requests
-      - total_completed_tokens
-      - total_completed_response_time
-      - tokens_per_second
-      - requests_per_second
-      - flops_per_second
+      - request_ids
       properties:
-        queue_depth:
-          type: integer
-        total_completed_requests:
-          type: integer
-        total_completed_tokens:
-          type: integer
-        total_completed_response_time:
-          type: number
-        tokens_per_second:
-          type: number
-        requests_per_second:
-          type: number
-        flops_per_second:
-          type: number
+        request_ids:
+          type: array
+          items:
+            type: string
     GetWorkRequest:
       type: object
       required:
@@ -550,35 +579,3 @@ components:
           type: integer
         loaded_adaptor_count:
           type: integer
-    GetAdaptorsResponse:
-      type: object
-      required:
-      - new_adaptors
-      properties:
-        new_adaptors:
-          type: array
-          items:
-            type: string
-    GetWorkResponse:
-      type: object
-      required:
-      - prompt
-      - request_id
-      - request_type
-      properties:
-        prompt:
-          oneOf:
-          - type: string
-          - type: object
-        request_id:
-          type: string
-        request_type:
-          type: string
-        model:
-          type:
-          - string
-          - 'null'
-        max_tokens:
-          type:
-          - integer
-          - 'null'

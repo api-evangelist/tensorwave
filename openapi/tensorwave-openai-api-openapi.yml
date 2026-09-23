@@ -3,10 +3,7 @@ info:
   title: ScalarLM Open AI API
   version: '1.151'
   summary: Unified LLM inference and training API from the ScalarLM stack, maintained and sponsored by TensorWave.
-  description: 'ScalarLM is TensorWave''s open-source (CC0-1.0) unified training and inference stack. A single deployment exposes an OpenAI-compatible inference endpoint backed by vLLM, a queue-backed batch generate surface, a Megatron-LM training surface dispatched through Slurm, and health/observability endpoints.
-
-
-    PROVENANCE: this document is DERIVED by API Evangelist from the first-party FastAPI source in github.com/tensorwavecloud/ScalarLM. Every path, method, parameter and schema below was read from the committed route decorators and Pydantic models listed in info.x-evidence.sources. TensorWave does not publish a static OpenAPI document; a live ScalarLM deployment serves FastAPI''s own generated spec at /openapi.json. This is not a provider-published artifact, and the operationIds here are API Evangelist naming rather than FastAPI''s generated ids.'
+  description: ScalarLM is TensorWave's open-source (CC0-1.0) unified training and inference stack.
   license:
     name: CC0-1.0
     url: https://creativecommons.org/publicdomain/zero/1.0/
@@ -41,7 +38,7 @@ servers:
 - url: http://localhost:8000
   description: Local development server started by ./scalarlm up.
 tags:
-- name: OpenAI
+- name: Openai
   description: OpenAI-compatible inference endpoints proxied to vLLM.
 paths:
   /v1/models:
@@ -49,7 +46,7 @@ paths:
       operationId: listModels
       summary: List available models
       tags:
-      - OpenAI
+      - Openai
       description: Proxies the upstream vLLM server's /v1/models. Returns the OpenAI model list envelope.
       responses:
         '200':
@@ -70,7 +67,7 @@ paths:
       operationId: createCompletion
       summary: Create a completion
       tags:
-      - OpenAI
+      - Openai
       description: OpenAI-compatible text completion. Proxied to the vLLM server; the request body is a vLLM CompletionRequest (OpenAI completions schema). Responses stream as text/event-stream.
       requestBody:
         required: true
@@ -96,7 +93,7 @@ paths:
       operationId: createChatCompletion
       summary: Create a chat completion
       tags:
-      - OpenAI
+      - Openai
       description: OpenAI-compatible chat completion. When stream is true the request is proxied straight to vLLM as an SSE stream; when false it is admitted to the queue-backed path (admission control -> coalescer -> SQLite inference work queue -> worker -> result router) and answered with a whitespace-heartbeat chunked JSON response.
       requestBody:
         required: true
@@ -120,6 +117,51 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    CompletionRequest:
+      type: object
+      required:
+      - prompt
+      description: vLLM's OpenAI-compatible CompletionRequest, imported by the router from vllm.entrypoints.openai.completion.protocol. The authoritative field list is vLLM's, not ScalarLM's; only the fields on the router's allow-list are forwarded upstream.
+      properties:
+        model:
+          type: string
+        prompt:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        max_tokens:
+          type: integer
+        temperature:
+          type: number
+        stream:
+          type: boolean
+      additionalProperties: true
+    ValidationError:
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      properties:
+        loc:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+        msg:
+          type: string
+        type:
+          type: string
     ChatCompletionRequest:
       type: object
       required:
@@ -143,30 +185,6 @@ components:
           items:
             type: object
       additionalProperties: true
-    ValidationError:
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      properties:
-        loc:
-          type: array
-          items:
-            oneOf:
-            - type: string
-            - type: integer
-        msg:
-          type: string
-        type:
-          type: string
-    HTTPValidationError:
-      type: object
-      properties:
-        detail:
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidationError'
     ChatMessage:
       type: object
       required:
@@ -182,24 +200,3 @@ components:
           - tool
         content:
           type: string
-    CompletionRequest:
-      type: object
-      required:
-      - prompt
-      description: vLLM's OpenAI-compatible CompletionRequest, imported by the router from vllm.entrypoints.openai.completion.protocol. The authoritative field list is vLLM's, not ScalarLM's; only the fields on the router's allow-list are forwarded upstream.
-      properties:
-        model:
-          type: string
-        prompt:
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        max_tokens:
-          type: integer
-        temperature:
-          type: number
-        stream:
-          type: boolean
-      additionalProperties: true

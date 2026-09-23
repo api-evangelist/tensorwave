@@ -3,10 +3,7 @@ info:
   title: ScalarLM Slurm API
   version: '1.151'
   summary: Unified LLM inference and training API from the ScalarLM stack, maintained and sponsored by TensorWave.
-  description: 'ScalarLM is TensorWave''s open-source (CC0-1.0) unified training and inference stack. A single deployment exposes an OpenAI-compatible inference endpoint backed by vLLM, a queue-backed batch generate surface, a Megatron-LM training surface dispatched through Slurm, and health/observability endpoints.
-
-
-    PROVENANCE: this document is DERIVED by API Evangelist from the first-party FastAPI source in github.com/tensorwavecloud/ScalarLM. Every path, method, parameter and schema below was read from the committed route decorators and Pydantic models listed in info.x-evidence.sources. TensorWave does not publish a static OpenAPI document; a live ScalarLM deployment serves FastAPI''s own generated spec at /openapi.json. This is not a provider-published artifact, and the operationIds here are API Evangelist naming rather than FastAPI''s generated ids.'
+  description: ScalarLM is TensorWave's open-source (CC0-1.0) unified training and inference stack.
   license:
     name: CC0-1.0
     url: https://creativecommons.org/publicdomain/zero/1.0/
@@ -143,6 +140,13 @@ components:
           type:
           - string
           - 'null'
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
     ValidationError:
       type: object
       required:
@@ -160,10 +164,3 @@ components:
           type: string
         type:
           type: string
-    HTTPValidationError:
-      type: object
-      properties:
-        detail:
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidationError'

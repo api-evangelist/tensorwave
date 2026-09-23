@@ -3,10 +3,7 @@ info:
   title: ScalarLM Training API
   version: '1.151'
   summary: Unified LLM inference and training API from the ScalarLM stack, maintained and sponsored by TensorWave.
-  description: 'ScalarLM is TensorWave''s open-source (CC0-1.0) unified training and inference stack. A single deployment exposes an OpenAI-compatible inference endpoint backed by vLLM, a queue-backed batch generate surface, a Megatron-LM training surface dispatched through Slurm, and health/observability endpoints.
-
-
-    PROVENANCE: this document is DERIVED by API Evangelist from the first-party FastAPI source in github.com/tensorwavecloud/ScalarLM. Every path, method, parameter and schema below was read from the committed route decorators and Pydantic models listed in info.x-evidence.sources. TensorWave does not publish a static OpenAPI document; a live ScalarLM deployment serves FastAPI''s own generated spec at /openapi.json. This is not a provider-published artifact, and the operationIds here are API Evangelist naming rather than FastAPI''s generated ids.'
+  description: ScalarLM is TensorWave's open-source (CC0-1.0) unified training and inference stack.
   license:
     name: CC0-1.0
     url: https://creativecommons.org/publicdomain/zero/1.0/
@@ -632,24 +629,20 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    UploadFinalizeRequest:
+    GetGPUCountResponse:
       type: object
       required:
-      - upload_id
+      - gpu_count
       properties:
-        upload_id:
-          type: string
-    SqueueResponse:
+        gpu_count:
+          type: integer
+    HTTPValidationError:
       type: object
       properties:
-        squeue_output:
-          type:
-          - string
-          - 'null'
-        error_message:
-          type:
-          - string
-          - 'null'
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
     PublishRequest:
       type: object
       required:
@@ -685,18 +678,24 @@ components:
           - string
           - 'null'
           description: HF commit message; auto-generated if omitted.
-    UploadInitResponse:
+    SqueueResponse:
+      type: object
+      properties:
+        squeue_output:
+          type:
+          - string
+          - 'null'
+        error_message:
+          type:
+          - string
+          - 'null'
+    UploadFinalizeRequest:
       type: object
       required:
       - upload_id
       properties:
         upload_id:
           type: string
-        received_chunks:
-          type: array
-          items:
-            type: integer
-          default: []
     TrainResponse:
       type: object
       required:
@@ -714,46 +713,6 @@ components:
           - boolean
           - 'null'
           default: false
-    UploadChunkResponse:
-      type: object
-      required:
-      - upload_id
-      - chunk_index
-      - received
-      - bytes_written
-      properties:
-        upload_id:
-          type: string
-        chunk_index:
-          type: integer
-        received:
-          type: boolean
-        bytes_written:
-          type: integer
-    GetNodeCountResponse:
-      type: object
-      required:
-      - node_count
-      properties:
-        node_count:
-          type: integer
-    ListModelsResponse:
-      type: object
-      required:
-      - models
-      properties:
-        models:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-    GetGPUCountResponse:
-      type: object
-      required:
-      - gpu_count
-      properties:
-        gpu_count:
-          type: integer
     ValidationError:
       type: object
       required:
@@ -771,13 +730,6 @@ components:
           type: string
         type:
           type: string
-    HTTPValidationError:
-      type: object
-      properties:
-        detail:
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidationError'
     UploadInitRequest:
       type: object
       required:
@@ -801,3 +753,48 @@ components:
         params:
           type: object
           additionalProperties: true
+    UploadChunkResponse:
+      type: object
+      required:
+      - upload_id
+      - chunk_index
+      - received
+      - bytes_written
+      properties:
+        upload_id:
+          type: string
+        chunk_index:
+          type: integer
+        received:
+          type: boolean
+        bytes_written:
+          type: integer
+    UploadInitResponse:
+      type: object
+      required:
+      - upload_id
+      properties:
+        upload_id:
+          type: string
+        received_chunks:
+          type: array
+          items:
+            type: integer
+          default: []
+    GetNodeCountResponse:
+      type: object
+      required:
+      - node_count
+      properties:
+        node_count:
+          type: integer
+    ListModelsResponse:
+      type: object
+      required:
+      - models
+      properties:
+        models:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
