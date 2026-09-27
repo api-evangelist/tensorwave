@@ -117,13 +117,21 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    HTTPValidationError:
+    ChatMessage:
       type: object
+      required:
+      - role
+      - content
       properties:
-        detail:
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidationError'
+        role:
+          type: string
+          enum:
+          - system
+          - user
+          - assistant
+          - tool
+        content:
+          type: string
     CompletionRequest:
       type: object
       required:
@@ -145,23 +153,13 @@ components:
         stream:
           type: boolean
       additionalProperties: true
-    ValidationError:
+    HTTPValidationError:
       type: object
-      required:
-      - loc
-      - msg
-      - type
       properties:
-        loc:
+        detail:
           type: array
           items:
-            oneOf:
-            - type: string
-            - type: integer
-        msg:
-          type: string
-        type:
-          type: string
+            $ref: '#/components/schemas/ValidationError'
     ChatCompletionRequest:
       type: object
       required:
@@ -185,18 +183,20 @@ components:
           items:
             type: object
       additionalProperties: true
-    ChatMessage:
+    ValidationError:
       type: object
       required:
-      - role
-      - content
+      - loc
+      - msg
+      - type
       properties:
-        role:
+        loc:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+        msg:
           type: string
-          enum:
-          - system
-          - user
-          - assistant
-          - tool
-        content:
+        type:
           type: string

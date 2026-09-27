@@ -629,20 +629,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    GetGPUCountResponse:
-      type: object
-      required:
-      - gpu_count
-      properties:
-        gpu_count:
-          type: integer
-    HTTPValidationError:
-      type: object
-      properties:
-        detail:
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidationError'
     PublishRequest:
       type: object
       required:
@@ -678,17 +664,23 @@ components:
           - string
           - 'null'
           description: HF commit message; auto-generated if omitted.
-    SqueueResponse:
+    ListModelsResponse:
       type: object
+      required:
+      - models
       properties:
-        squeue_output:
-          type:
-          - string
-          - 'null'
-        error_message:
-          type:
-          - string
-          - 'null'
+        models:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+    GetGPUCountResponse:
+      type: object
+      required:
+      - gpu_count
+      properties:
+        gpu_count:
+          type: integer
     UploadFinalizeRequest:
       type: object
       required:
@@ -713,6 +705,47 @@ components:
           - boolean
           - 'null'
           default: false
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    UploadChunkResponse:
+      type: object
+      required:
+      - upload_id
+      - chunk_index
+      - received
+      - bytes_written
+      properties:
+        upload_id:
+          type: string
+        chunk_index:
+          type: integer
+        received:
+          type: boolean
+        bytes_written:
+          type: integer
+    GetNodeCountResponse:
+      type: object
+      required:
+      - node_count
+      properties:
+        node_count:
+          type: integer
+    SqueueResponse:
+      type: object
+      properties:
+        squeue_output:
+          type:
+          - string
+          - 'null'
+        error_message:
+          type:
+          - string
+          - 'null'
     ValidationError:
       type: object
       required:
@@ -730,6 +763,18 @@ components:
           type: string
         type:
           type: string
+    UploadInitResponse:
+      type: object
+      required:
+      - upload_id
+      properties:
+        upload_id:
+          type: string
+        received_chunks:
+          type: array
+          items:
+            type: integer
+          default: []
     UploadInitRequest:
       type: object
       required:
@@ -753,48 +798,3 @@ components:
         params:
           type: object
           additionalProperties: true
-    UploadChunkResponse:
-      type: object
-      required:
-      - upload_id
-      - chunk_index
-      - received
-      - bytes_written
-      properties:
-        upload_id:
-          type: string
-        chunk_index:
-          type: integer
-        received:
-          type: boolean
-        bytes_written:
-          type: integer
-    UploadInitResponse:
-      type: object
-      required:
-      - upload_id
-      properties:
-        upload_id:
-          type: string
-        received_chunks:
-          type: array
-          items:
-            type: integer
-          default: []
-    GetNodeCountResponse:
-      type: object
-      required:
-      - node_count
-      properties:
-        node_count:
-          type: integer
-    ListModelsResponse:
-      type: object
-      required:
-      - models
-      properties:
-        models:
-          type: array
-          items:
-            type: object
-            additionalProperties: true

@@ -12,17 +12,20 @@ description: 'TensorWave is a Las Vegas-headquartered AI cloud provider that bui
   together with a Megatron-LM training surface from a single deployment.'
 url: https://raw.githubusercontent.com/api-evangelist/tensorwave/refs/heads/main/apis.yml
 deliveryModel:
-  model: unknown
+  model: saas
+  license_evidence:
+    not_product:
+    - tensorwavecloud/scalarlm
   open_source: unknown
   commercial: true
   callable_host: true
-  label: Delivery model not determined — needs a product licence on record
+  label: Hosted service · you call their endpoint
   confidence: low
   source:
   - openapi
   - pricing
-  - repository-unlicensed
-  generated: '2026-08-28'
+  - repository-not-product
+  generated: '2026-09-25'
   method: derived
 accessModel:
   pricing: unknown
@@ -46,14 +49,14 @@ modified: '2026-08-02'
 tags:
 - Company
 - Artificial Intelligence
-- Machine-Learning
+- Machine Learning
 - Cloud Computing
 - GPU
 - Infrastructure
 - Inference
 - Model Training
 - High Performance Computing
-- Data-Center
+- Data Center
 tags_raw:
 - Company
 - Artificial Intelligence
@@ -65,6 +68,8 @@ tags_raw:
 - Model Training
 - High Performance Computing
 - Data Centers
+- Machine-Learning
+- Data-Center
 apis:
 - aid: tensorwave:tensorwave-generate-api
   name: TensorWave Generate API

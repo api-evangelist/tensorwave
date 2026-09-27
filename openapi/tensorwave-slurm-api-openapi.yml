@@ -129,6 +129,13 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
     SqueueResponse:
       type: object
       properties:
@@ -140,13 +147,6 @@ components:
           type:
           - string
           - 'null'
-    HTTPValidationError:
-      type: object
-      properties:
-        detail:
-          type: array
-          items:
-            $ref: '#/components/schemas/ValidationError'
     ValidationError:
       type: object
       required:
