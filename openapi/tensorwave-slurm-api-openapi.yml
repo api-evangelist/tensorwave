@@ -129,17 +129,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    SqueueResponse:
-      type: object
-      properties:
-        squeue_output:
-          type:
-          - string
-          - 'null'
-        error_message:
-          type:
-          - string
-          - 'null'
     ValidationError:
       type: object
       required:
@@ -164,3 +153,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ValidationError'
+    SqueueResponse:
+      type: object
+      properties:
+        squeue_output:
+          type:
+          - string
+          - 'null'
+        error_message:
+          type:
+          - string
+          - 'null'

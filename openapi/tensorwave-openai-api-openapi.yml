@@ -117,27 +117,6 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    CompletionRequest:
-      type: object
-      required:
-      - prompt
-      description: vLLM's OpenAI-compatible CompletionRequest, imported by the router from vllm.entrypoints.openai.completion.protocol. The authoritative field list is vLLM's, not ScalarLM's; only the fields on the router's allow-list are forwarded upstream.
-      properties:
-        model:
-          type: string
-        prompt:
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: string
-        max_tokens:
-          type: integer
-        temperature:
-          type: number
-        stream:
-          type: boolean
-      additionalProperties: true
     ChatMessage:
       type: object
       required:
@@ -152,23 +131,6 @@ components:
           - assistant
           - tool
         content:
-          type: string
-    ValidationError:
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      properties:
-        loc:
-          type: array
-          items:
-            oneOf:
-            - type: string
-            - type: integer
-        msg:
-          type: string
-        type:
           type: string
     ChatCompletionRequest:
       type: object
@@ -200,3 +162,41 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ValidationError'
+    ValidationError:
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      properties:
+        loc:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+        msg:
+          type: string
+        type:
+          type: string
+    CompletionRequest:
+      type: object
+      required:
+      - prompt
+      description: vLLM's OpenAI-compatible CompletionRequest, imported by the router from vllm.entrypoints.openai.completion.protocol. The authoritative field list is vLLM's, not ScalarLM's; only the fields on the router's allow-list are forwarded upstream.
+      properties:
+        model:
+          type: string
+        prompt:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        max_tokens:
+          type: integer
+        temperature:
+          type: number
+        stream:
+          type: boolean
+      additionalProperties: true
