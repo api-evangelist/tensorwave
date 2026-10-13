@@ -1,0 +1,23 @@
+edges:
+- partner_name: OpenAI
+  partner: openai
+  partner_match: domain
+  type: contract
+  channel: provider-built
+  relationship: compatible
+  direction: provider-built
+  evidence: https://github.com/api-evangelist/tensorwave/blob/main/openapi/tensorwave-openai-api-openapi.yml#L42
+  contract_reference:
+    repo: tensorwave
+    spec_file: tensorwave-openai-api-openapi.yml
+    property: description
+    value: OpenAI-compatible
+    note: 'tensorwave declares OpenAI compatibility: ''description: OpenAI-compatible inference endpoints proxied
+      to vLLM.'''
+    detected_by: sweep-model-routing.py
+    detected: '2026-10-13'
+  detected_by: sweep-model-routing.py
+  first_seen: '2026-10-13'
+generated: '2026-10-13'
+method: searched
+checked: []
