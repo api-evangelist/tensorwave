@@ -336,78 +336,31 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
-    DownloadRequest:
+    MetricsResponse:
       type: object
       required:
-      - request_id
+      - queue_depth
+      - total_completed_requests
+      - total_completed_tokens
+      - total_completed_response_time
+      - tokens_per_second
+      - requests_per_second
+      - flops_per_second
       properties:
-        request_id:
-          type: string
-    UploadResult:
-      type: object
-      required:
-      - request_id
-      properties:
-        request_id:
-          type: string
-        error:
-          type:
-          - string
-          - 'null'
-    GetAdaptorsResponse:
-      type: object
-      required:
-      - new_adaptors
-      properties:
-        new_adaptors:
-          type: array
-          items:
-            type: string
-    GetWorkRequest:
-      type: object
-      required:
-      - batch_size
-      - loaded_adaptor_count
-      properties:
-        batch_size:
+        queue_depth:
           type: integer
-        loaded_adaptor_count:
+        total_completed_requests:
           type: integer
-    GetWorkResponse:
-      type: object
-      required:
-      - prompt
-      - request_id
-      - request_type
-      properties:
-        prompt:
-          oneOf:
-          - type: string
-          - type: object
-        request_id:
-          type: string
-        request_type:
-          type: string
-        model:
-          type:
-          - string
-          - 'null'
-        max_tokens:
-          type:
-          - integer
-          - 'null'
-    GetWorkResponses:
-      type: object
-      required:
-      - requests
-      - new_adaptors
-      properties:
-        requests:
-          type: array
-          items:
-            $ref: '#/components/schemas/GetWorkResponse'
-        new_adaptors:
-          $ref: '#/components/schemas/GetAdaptorsResponse'
+        total_completed_tokens:
+          type: integer
+        total_completed_response_time:
+          type: number
+        tokens_per_second:
+          type: number
+        requests_per_second:
+          type: number
+        flops_per_second:
+          type: number
     FinishWorkRequest:
       type: object
       required:
@@ -442,6 +395,62 @@ components:
           type:
           - integer
           - 'null'
+    GetAdaptorsRequest:
+      type: object
+      required:
+      - loaded_adaptor_count
+      properties:
+        loaded_adaptor_count:
+          type: integer
+    Result:
+      type: object
+      required:
+      - request_id
+      properties:
+        request_id:
+          type: string
+        response:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: number
+          - type: 'null'
+        error:
+          type:
+          - string
+          - 'null'
+    DownloadRequest:
+      type: object
+      required:
+      - request_id
+      properties:
+        request_id:
+          type: string
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    ValidationError:
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      properties:
+        loc:
+          type: array
+          items:
+            oneOf:
+            - type: string
+            - type: integer
+        msg:
+          type: string
+        type:
+          type: string
     FinishWorkRequests:
       type: object
       required:
@@ -451,45 +460,89 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FinishWorkRequest'
-    MetricsResponse:
+    GenerateResponse:
       type: object
       required:
-      - queue_depth
-      - total_completed_requests
-      - total_completed_tokens
-      - total_completed_response_time
-      - tokens_per_second
-      - requests_per_second
-      - flops_per_second
+      - results
       properties:
-        queue_depth:
-          type: integer
-        total_completed_requests:
-          type: integer
-        total_completed_tokens:
-          type: integer
-        total_completed_response_time:
-          type: number
-        tokens_per_second:
-          type: number
-        requests_per_second:
-          type: number
-        flops_per_second:
-          type: number
-    HTTPValidationError:
-      type: object
-      properties:
-        detail:
+        results:
           type: array
           items:
-            $ref: '#/components/schemas/ValidationError'
-    GetAdaptorsRequest:
+            $ref: '#/components/schemas/Result'
+    GetWorkResponse:
       type: object
       required:
+      - prompt
+      - request_id
+      - request_type
+      properties:
+        prompt:
+          oneOf:
+          - type: string
+          - type: object
+        request_id:
+          type: string
+        request_type:
+          type: string
+        model:
+          type:
+          - string
+          - 'null'
+        max_tokens:
+          type:
+          - integer
+          - 'null'
+    UploadResult:
+      type: object
+      required:
+      - request_id
+      properties:
+        request_id:
+          type: string
+        error:
+          type:
+          - string
+          - 'null'
+    GetWorkResponses:
+      type: object
+      required:
+      - requests
+      - new_adaptors
+      properties:
+        requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/GetWorkResponse'
+        new_adaptors:
+          $ref: '#/components/schemas/GetAdaptorsResponse'
+    GetResultsRequest:
+      type: object
+      required:
+      - request_ids
+      properties:
+        request_ids:
+          type: array
+          items:
+            type: string
+    GetWorkRequest:
+      type: object
+      required:
+      - batch_size
       - loaded_adaptor_count
       properties:
+        batch_size:
+          type: integer
         loaded_adaptor_count:
           type: integer
+    GetAdaptorsResponse:
+      type: object
+      required:
+      - new_adaptors
+      properties:
+        new_adaptors:
+          type: array
+          items:
+            type: string
     GenerateRequest:
       type: object
       required:
@@ -526,56 +579,3 @@ components:
           - type: string
           - type: object
           - type: 'null'
-    GenerateResponse:
-      type: object
-      required:
-      - results
-      properties:
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/Result'
-    ValidationError:
-      type: object
-      required:
-      - loc
-      - msg
-      - type
-      properties:
-        loc:
-          type: array
-          items:
-            oneOf:
-            - type: string
-            - type: integer
-        msg:
-          type: string
-        type:
-          type: string
-    Result:
-      type: object
-      required:
-      - request_id
-      properties:
-        request_id:
-          type: string
-        response:
-          oneOf:
-          - type: string
-          - type: array
-            items:
-              type: number
-          - type: 'null'
-        error:
-          type:
-          - string
-          - 'null'
-    GetResultsRequest:
-      type: object
-      required:
-      - request_ids
-      properties:
-        request_ids:
-          type: array
-          items:
-            type: string
